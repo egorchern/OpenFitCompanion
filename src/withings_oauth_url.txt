@@ -1,0 +1,1 @@
+https://account.withings.com/oauth2_user/authorize2?response_type=code&client_id=45670c94eb374ba24d4bd14dd37c25c3c65d37a4b25cfca377769d4d170a2303&scope=user.info,user.metrics,user.activity&redirect_uri=https://mqlqruemltdxgulrkn2ohwnila0xsmkm.lambda-url.us-east-1.on.aws/&state=1

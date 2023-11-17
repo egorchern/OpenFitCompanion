@@ -1,4 +1,4 @@
 {
-    "tokens_table_name": "Tokens",
+    "tokens_table_name": "tokens",
     "LocalDbEndpoint": "http://localhost:8000"
 }
