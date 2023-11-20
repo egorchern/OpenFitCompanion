@@ -9,12 +9,14 @@ if (process.env.NODE_ENV === "dev"){
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-export const putToken = async (tokenType: tokenType, tokenValue: string) => {
+export const putToken = async (tokenType: tokenType, tokenValue: string, expiresIn: number) => {
     const putTokenCommand = new PutCommand({
         TableName: config.tokens_table_name,
         Item: {
             TokenType: tokenType,
-            Value: tokenValue,
+            value: tokenValue,
+            createdAt: Date.now(),
+            expiresIn: expiresIn
         }
     })
     const response = await ddbDocClient.send(putTokenCommand)

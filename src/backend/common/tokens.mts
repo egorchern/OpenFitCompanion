@@ -1,10 +1,33 @@
 
+import { putToken } from "./db/tokens/insert.mjs"
+import { getToken } from "./db/tokens/select.mjs"
+import { tokenType } from "./db/tokens/types.mjs"
 import { generateHash, generateSignature } from "./utilities.mjs"
 
 const WithingsOAUTHUrl = "https://wbsapi.withings.net/v2/oauth2"
 const WithingsSignatureUrl = "https://wbsapi.withings.net/v2/signature"
 const callback_url = "https://mqlqruemltdxgulrkn2ohwnila0xsmkm.lambda-url.us-east-1.on.aws/"
 
+const getTimestamp = () => {
+    return Math.floor(Date.now() / 1000)
+}
+
+export const getAccessToken = async () => {
+    const curAccessToken = await getToken(tokenType.AccessToken)
+    const curEpoch = getTimestamp()
+    if (!curAccessToken || curEpoch >= curAccessToken.createdAt + curAccessToken.expiresIn){
+        const refreshToken = (await getToken(tokenType.RefreshToken))?.value
+        if (!refreshToken){
+            throw new Error("You have not authorized your application with your account")
+        }
+        putToken(tokenType.RefreshToken, refreshToken, 1)
+        const temp = await requestAccessToken(refreshToken)
+        
+        putToken(tokenType.AccessToken, temp.accessToken, temp.expiresIn)
+        return temp.accessToken
+    }
+    return curAccessToken.value
+}
 
 export const requestRefreshToken = async (authorizationCode: string) => {
     const {nonce} = await requestNonce()
@@ -30,9 +53,9 @@ export const requestRefreshToken = async (authorizationCode: string) => {
     if(!result.body?.refresh_token){
         throw new Error
     }
-    const refreshToken = result.body.refresh_token
-    const accessToken = result.body.access_token
-    const userId = result.body.userid
+    const refreshToken: string = result.body.refresh_token
+    const accessToken: string = result.body.access_token
+    const userId: string = result.body.userid
     return {refreshToken, accessToken, userId}
     
 }
@@ -59,9 +82,10 @@ export const requestAccessToken = async (curRefreshToken: string) => {
     if(!result.body?.access_token){
         throw new Error
     }
-    const refreshToken = result.body.refresh_token
-    const accessToken = result.body.access_token
-    return {refreshToken, accessToken}
+    const refreshToken: string = result.body.refresh_token
+    const accessToken: string = result.body.access_token
+    const expiresIn: number = result.body.expires_in
+    return {refreshToken, accessToken, expiresIn}
 }
 
 export const requestNonce = async () => {

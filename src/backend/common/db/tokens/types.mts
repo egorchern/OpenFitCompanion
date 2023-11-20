@@ -3,3 +3,10 @@ export const enum tokenType {
     AccessToken = "accessToken",
     UserId = "userId"
 }
+
+export interface Token {
+    TokenType: tokenType,
+    value: string,
+    expiresIn: number,
+    createdAt: number
+}

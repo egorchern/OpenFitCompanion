@@ -1,19 +1,18 @@
 
 import { notificationCategory } from "./types.mjs"
-import { getToken } from "../../db/tokens/select.mjs"
-import { tokenType } from "../../db/tokens/types.mjs"
-import { putToken } from "common/db/tokens/insert.mjs"
+import { getAccessToken } from "../../tokens.mjs"
 const WithingsNotifyUrl = "https://wbsapi.withings.net/notify"
-const callbackUrl = "https://mqlqruemltdxgulrkn2ohwnila0xsmkm.lambda-url.us-east-1.on.aws/"
+const callbackUrl = "https://rrcimmcmlqvl7n2gj7a36xdqku0zehth.lambda-url.us-east-1.on.aws/"
 export const subscribe = async (category: notificationCategory) => {
-    const accessToken = getToken(tokenType.AccessToken)
+    const accessToken = await getAccessToken()
     const queryUrl = new URL(WithingsNotifyUrl)
-    queryUrl.search = new URLSearchParams({
+    queryUrl.search += new URLSearchParams({
         action: "subscribe",
-        callbackurl: callbackUrl,
         appli: category.toString(),
         
     }).toString()
+    queryUrl.search += `&callbackurl=${callbackUrl}`
+    console.log(queryUrl.href)
     const response = await fetch(queryUrl, {
         method: "POST",
         headers: new Headers({
@@ -23,3 +22,4 @@ export const subscribe = async (category: notificationCategory) => {
     const result = await response.json()
     console.log(result)
 }
+subscribe(notificationCategory.Activity)

@@ -17,7 +17,7 @@ export const handler = async (event:any, context:any) =>  {
     const authorization_code = queryParams.code
     try {
         const {refreshToken, accessToken, userId} = await requestRefreshToken(authorization_code)
-        await Promise.all([putToken(tokenType.RefreshToken, refreshToken), putToken(tokenType.AccessToken, accessToken), putToken(tokenType.UserId, userId)])
+        await Promise.all([putToken(tokenType.RefreshToken, refreshToken, 1), putToken(tokenType.UserId, userId, 1)])
         return {
             statusCode: 200
         }
