@@ -9,3 +9,7 @@ export const generateHash = (items: string[]) => {
 export const generateSignature = (action: string, nonce: string) => {
     return generateHash([action, process.env.WITHINGS_CLIENT_ID ?? "", nonce])
 }
+
+export const getTimestamp = () => {
+    return Math.floor(Date.now() / 1000)
+}

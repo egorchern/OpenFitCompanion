@@ -22,4 +22,3 @@ export const subscribe = async (category: notificationCategory) => {
     const result = await response.json()
     console.log(result)
 }
-subscribe(notificationCategory.Activity)

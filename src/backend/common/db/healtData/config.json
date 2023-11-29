@@ -1,0 +1,4 @@
+{
+    "healthDataTableName": "HealthData",
+    "LocalDbEndpoint": "http://localhost:8000"
+}

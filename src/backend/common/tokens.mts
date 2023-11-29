@@ -2,15 +2,12 @@
 import { putToken } from "./db/tokens/insert.mjs"
 import { getToken } from "./db/tokens/select.mjs"
 import { tokenType } from "./db/tokens/types.mjs"
-import { generateHash, generateSignature } from "./utilities.mjs"
+import { generateHash, generateSignature, getTimestamp } from "./utilities.mjs"
 
 const WithingsOAUTHUrl = "https://wbsapi.withings.net/v2/oauth2"
 const WithingsSignatureUrl = "https://wbsapi.withings.net/v2/signature"
 const callback_url = "https://mqlqruemltdxgulrkn2ohwnila0xsmkm.lambda-url.us-east-1.on.aws/"
 
-const getTimestamp = () => {
-    return Math.floor(Date.now() / 1000)
-}
 
 export const getAccessToken = async () => {
     const curAccessToken = await getToken(tokenType.AccessToken)
@@ -20,10 +17,9 @@ export const getAccessToken = async () => {
         if (!refreshToken){
             throw new Error("You have not authorized your application with your account")
         }
-        putToken(tokenType.RefreshToken, refreshToken, 1)
         const temp = await requestAccessToken(refreshToken)
+        await Promise.all([putToken(tokenType.RefreshToken, temp.refreshToken, 1), putToken(tokenType.AccessToken, temp.accessToken, temp.expiresIn)])
         
-        putToken(tokenType.AccessToken, temp.accessToken, temp.expiresIn)
         return temp.accessToken
     }
     return curAccessToken.value
