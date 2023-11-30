@@ -7,7 +7,8 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
     queryUrl.search = new URLSearchParams({
         action: "getsummary",
         startdateymd: startDate,
-        enddateymd: endDate
+        enddateymd: endDate,
+        data_fields:"lightsleepduration,deepsleepduration,wakeupduration,sleep_latency,startdate,enddate"
     }).toString()
     const response = await fetch(queryUrl, {
         method: "POST",
@@ -21,3 +22,4 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
     }
     return result.body.series
 }
+

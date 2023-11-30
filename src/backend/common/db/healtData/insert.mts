@@ -10,6 +10,7 @@ const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 export const putHealthData = async (provider: string, data:any) => {
+    Object.keys(data).forEach(key => data[key] === undefined ? delete data[key] : {});
     data.Provider = provider
     data.CreatedAt = getTimestamp();
     console.log(data);

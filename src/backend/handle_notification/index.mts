@@ -2,15 +2,7 @@ import { putHealthData } from "../common/db/healtData/insert.mjs";
 import { getDailyAggregatedActivity } from "../common/api_requests/activity/index.mjs";
 import { notificationCategory } from "../common/api_requests/notify/types.mjs";
 import { getDailySleepSummary } from "../common//api_requests/sleep/index.mjs";
-
-export const handler = async (event:any, context:any) =>  {
-    if (typeof event === 'string'){
-        event = JSON.parse(event);
-    }
-    const body = event.body;
-    const buff =  Buffer.from(body, 'base64');
-    const text = buff.toString('utf8');
-    const params = new URLSearchParams(text)
+const processNotification = async (params: any) => {
     const appli = Number(params.get("appli"));
     let healthData: any = {Type: appli}
     switch (appli){
@@ -42,6 +34,22 @@ export const handler = async (event:any, context:any) =>  {
 
 
     }
+    console.log(healthData)
     // store health data
-    putHealthData("Withings", healthData)
+    await putHealthData("Withings", healthData)
+}
+
+export const handler = async (event:any, context:any) =>  {
+    if (typeof event === 'string'){
+        event = JSON.parse(event);
+    }
+    const body = event.body;
+    const buff =  Buffer.from(body, 'base64');
+    const text = buff.toString('utf8');
+    const params = new URLSearchParams(text)
+    processNotification(params)
+    return {
+        statusCode: 200
+    }
+    
 }

@@ -11,7 +11,8 @@ export const getDailyAggregatedActivity = async (startDate: string, endDate: str
     queryUrl.search = new URLSearchParams({
         action: "getactivity",
         startdateymd: startDate,
-        enddateymd: endDate
+        enddateymd: endDate,
+        data_fields: "steps,hr_average,soft,moderate,intense"
     }).toString()
     const response = await fetch(queryUrl, {
         method: "POST",
