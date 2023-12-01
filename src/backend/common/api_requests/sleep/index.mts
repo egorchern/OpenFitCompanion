@@ -8,8 +8,8 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
         action: "getsummary",
         startdateymd: startDate,
         enddateymd: endDate,
-        data_fields:"lightsleepduration,deepsleepduration,wakeupduration,sleep_latency,startdate,enddate"
     }).toString()
+    queryUrl.search += "&data_fields=lightsleepduration,deepsleepduration,wakeupduration,sleep_latency"
     const response = await fetch(queryUrl, {
         method: "POST",
         headers: new Headers({
@@ -17,6 +17,7 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
         })
     })
     const result = await response.json()
+    console.log(result)
     if (!result?.body?.series){
         throw new Error
     }

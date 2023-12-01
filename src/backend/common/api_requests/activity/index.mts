@@ -12,8 +12,8 @@ export const getDailyAggregatedActivity = async (startDate: string, endDate: str
         action: "getactivity",
         startdateymd: startDate,
         enddateymd: endDate,
-        data_fields: "steps,hr_average,soft,moderate,intense"
     }).toString()
+    queryUrl.search += "&data_fields=steps,hr_average,soft,moderate,intense"
     const response = await fetch(queryUrl, {
         method: "POST",
         headers: new Headers({
@@ -21,8 +21,10 @@ export const getDailyAggregatedActivity = async (startDate: string, endDate: str
         })
     })
     const result = await response.json()
+    console.log(result)
     if (!result?.body?.activities){
         throw new Error
     }
     return result.body.activities
 }
+
