@@ -1,8 +1,8 @@
 import { DynamoDBClient, DynamoDBClientConfig} from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand} from "@aws-sdk/lib-dynamodb";
-import { tokenType } from "./types.mjs";
 import { getTimestamp } from "../../utilities.mjs";
 import config from "./config.json" assert { type: "json" }
+import { GoalType } from "./types.mjs";
 const dbConfig: DynamoDBClientConfig = {}
 if (process.env.NODE_ENV === "dev"){
     dbConfig.endpoint = config.LocalDbEndpoint
@@ -10,16 +10,19 @@ if (process.env.NODE_ENV === "dev"){
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-export const insertToken = async (tokenType: tokenType, tokenValue: string, expiresIn: number) => {
+export const insertGoal = async (goalType: GoalType, value: Number) => {
+    
+    let data: any = {
+        Type: goalType,
+        Value: value,
+        CreatedAt: getTimestamp()
+    }
+
+    console.log(data);
     const putTokenCommand = new PutCommand({
-        TableName: config.tokens_table_name,
-        Item: {
-            TokenType: tokenType,
-            value: tokenValue,
-            createdAt: getTimestamp(),
-            expiresIn: expiresIn
-        }
+        TableName: config.tableName,
+        Item: data,
+        
     })
     const response = await ddbDocClient.send(putTokenCommand)
-    
 }

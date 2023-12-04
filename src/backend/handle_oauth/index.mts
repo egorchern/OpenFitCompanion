@@ -1,5 +1,5 @@
 import { requestRefreshToken } from "../common/tokens.mjs";
-import { putToken } from "../common/db/tokens/insert.mjs";
+import { insertToken } from "../common/db/tokens/insert.mjs";
 import { tokenType } from "common/db/tokens/types.mjs";
 
 
@@ -17,7 +17,7 @@ export const handler = async (event:any, context:any) =>  {
     const authorization_code = queryParams.code
     try {
         const {refreshToken, accessToken, userId} = await requestRefreshToken(authorization_code)
-        await Promise.all([putToken(tokenType.RefreshToken, refreshToken, 1), putToken(tokenType.UserId, userId, 1)])
+        await Promise.all([insertToken(tokenType.RefreshToken, refreshToken, 1), insertToken(tokenType.UserId, userId, 1)])
         return {
             statusCode: 200
         }

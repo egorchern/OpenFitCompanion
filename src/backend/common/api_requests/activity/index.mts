@@ -1,8 +1,4 @@
-
-import { putToken } from "../../db/tokens/insert.mjs"
-import { putHealthData } from "../../db/healtData/insert.mjs"
 import { getAccessToken } from "../../tokens.mjs"
-import { tokenType } from "../../db/tokens/types.mjs"
 const WithingsMeasureUrl = "https://wbsapi.withings.net/v2/measure"
 
 export const getDailyAggregatedActivity = async (startDate: string, endDate: string) => {

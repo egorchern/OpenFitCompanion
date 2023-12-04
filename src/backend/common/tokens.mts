@@ -1,5 +1,5 @@
 
-import { putToken } from "./db/tokens/insert.mjs"
+import { insertToken } from "./db/tokens/insert.mjs"
 import { getToken } from "./db/tokens/select.mjs"
 import { tokenType } from "./db/tokens/types.mjs"
 import { generateHash, generateSignature, getTimestamp } from "./utilities.mjs"
@@ -18,7 +18,7 @@ export const getAccessToken = async () => {
             throw new Error("You have not authorized your application with your account")
         }
         const temp = await requestAccessToken(refreshToken)
-        await Promise.all([putToken(tokenType.RefreshToken, temp.refreshToken, 1), putToken(tokenType.AccessToken, temp.accessToken, temp.expiresIn)])
+        await Promise.all([insertToken(tokenType.RefreshToken, temp.refreshToken, 1), insertToken(tokenType.AccessToken, temp.accessToken, temp.expiresIn)])
         
         return temp.accessToken
     }

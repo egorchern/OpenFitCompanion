@@ -2,7 +2,7 @@ import { HealthDataType } from "common/db/healtData/types.mjs";
 import { getDailyAggregatedActivity } from "../common/api_requests/activity/index.mjs";
 import { notificationCategory } from "../common/api_requests/notify/types.mjs";
 import { getDailySleepSummary } from "../common/api_requests/sleep/index.mjs";
-import { putHealthData } from "../common/db/healtData/insert.mjs";
+import { insertHealthData } from "../common/db/healtData/insert.mjs";
 
 export const handler = async (
   event: any,
@@ -59,5 +59,5 @@ const processNotification = async (params: any) => {
     }
     console.log(healthData)
     // store health data
-    await putHealthData(date, type, "Withings", healthData)
+    await insertHealthData(date, type, "Withings", healthData)
 }
