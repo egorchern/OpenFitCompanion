@@ -13,12 +13,16 @@
     "@types/aws-sdk": "^2.7.0",
     "@types/node": "^20.9.0",
     "@types/uuid": "^9.0.7",
+    "@types/web-push": "^3.6.3",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.445.0",
     "@aws-sdk/client-sns": "^3.462.0",
     "@aws-sdk/lib-dynamodb": "^3.445.0",
-    "axios": "^1.6.1"
+    "axios": "^1.6.1",
+    "dotenv": "^16.3.1",
+    "mkcert": "^3.2.0",
+    "web-push": "^3.6.6"
   }
 }
