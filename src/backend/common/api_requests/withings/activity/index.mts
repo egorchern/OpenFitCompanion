@@ -9,7 +9,7 @@ export const getDailyAggregatedActivity = async (startDate: string, endDate: str
         startdateymd: startDate,
         enddateymd: endDate,
     }).toString()
-    queryUrl.search += "&data_fields=steps,hr_average,soft,moderate,intense"
+    queryUrl.search += "&data_fields=steps,hr_average,soft,moderate,intense,calories"
     const response = await fetch(queryUrl, {
         method: "POST",
         headers: new Headers({
