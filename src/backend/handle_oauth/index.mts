@@ -1,4 +1,4 @@
-import { requestRefreshToken } from "../common/tokens.mjs";
+import { requestRefreshToken } from "../common/api_requests/withings/tokens/tokens.mjs";
 import { insertToken } from "../common/db/tokens/insert.mjs";
 import { tokenType } from "common/db/tokens/types.mjs";
 

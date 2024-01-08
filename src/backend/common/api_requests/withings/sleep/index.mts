@@ -1,4 +1,4 @@
-import { getAccessToken } from "../../tokens.mjs"
+import { getAccessToken } from "../tokens/tokens.mjs"
 const baseUrl = "https://wbsapi.withings.net/v2/sleep"
 
 export const getDailySleepSummary = async (startDate: string, endDate: string) => {
@@ -9,7 +9,7 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
         startdateymd: startDate,
         enddateymd: endDate,
     }).toString()
-    queryUrl.search += "&data_fields=lightsleepduration,deepsleepduration,wakeupduration,sleep_latency"
+    queryUrl.search += "&data_fields=lightsleepduration,deepsleepduration,remsleepduration,sleep_score,wakeupduration,sleep_latency"
     const response = await fetch(queryUrl, {
         method: "POST",
         headers: new Headers({
@@ -17,7 +17,6 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
         })
     })
     const result = await response.json()
-    console.log(result)
     if (!result?.body?.series){
         throw new Error
     }

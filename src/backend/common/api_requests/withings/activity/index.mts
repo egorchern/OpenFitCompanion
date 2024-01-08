@@ -1,4 +1,4 @@
-import { getAccessToken } from "../../tokens.mjs"
+import { getAccessToken } from "../tokens/tokens.mjs"
 const WithingsMeasureUrl = "https://wbsapi.withings.net/v2/measure"
 
 export const getDailyAggregatedActivity = async (startDate: string, endDate: string) => {

@@ -1,8 +1,20 @@
 
-import { insertToken } from "./db/tokens/insert.mjs"
-import { getToken } from "./db/tokens/select.mjs"
-import { tokenType } from "./db/tokens/types.mjs"
-import { generateHash, generateSignature, getTimestamp } from "./utilities.mjs"
+import { insertToken } from "../../../db/tokens/insert.mjs"
+import { getToken } from "../../../db/tokens/select.mjs"
+import { tokenType } from "../../../db/tokens/types.mjs"
+import { getTimestamp } from "../../../utilities.mjs"
+import {createHmac} from "crypto"
+
+export const generateHash = (items: string[]) => {
+    // concat items
+    const plaintext = items.join(",")
+    const secret = process.env.WITHINGS_SECRET ?? ""
+    return createHmac("sha256", secret).update(plaintext).digest("hex")
+}
+
+export const generateSignature = (action: string, nonce: string) => {
+    return generateHash([action, process.env.WITHINGS_CLIENT_ID ?? "", nonce])
+}
 
 const WithingsOAUTHUrl = "https://wbsapi.withings.net/v2/oauth2"
 const WithingsSignatureUrl = "https://wbsapi.withings.net/v2/signature"

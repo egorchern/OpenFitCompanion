@@ -1,6 +1,6 @@
 
 import { notificationCategory } from "./types.mjs"
-import { getAccessToken } from "../../tokens.mjs"
+import { getAccessToken } from "../tokens/tokens.mjs"
 const WithingsNotifyUrl = "https://wbsapi.withings.net/notify"
 const callbackUrl = "https://rrcimmcmlqvl7n2gj7a36xdqku0zehth.lambda-url.us-east-1.on.aws/"
 export const subscribe = async (category: notificationCategory) => {
