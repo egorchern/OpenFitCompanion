@@ -46,3 +46,5 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
         ...result.data[0]
     }
 }
+
+console.log(await getDailySleepSummary("2024-01-08", "2024-01-09"))
