@@ -2,6 +2,7 @@ import { DynamoDBClient, DynamoDBClientConfig} from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand} from "@aws-sdk/lib-dynamodb";
 import config from "./config.json" assert { type: "json" }
 import { HealthDataType } from "./types.mjs";
+import { Provider } from "../../types.mjs";
 const dbConfig: DynamoDBClientConfig = {}
 if (process.env.NODE_ENV === "dev"){
     dbConfig.endpoint = config.LocalDbEndpoint
@@ -9,11 +10,11 @@ if (process.env.NODE_ENV === "dev"){
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-export const selectHealthData = async (date: string, type: HealthDataType) => {
+export const selectHealthData = async (date: string, type: HealthDataType, provider: Provider) => {
     const command = new GetCommand({
         TableName: config.healthDataTableName,
         Key: {
-           Type: type,
+           Type: `${type}_${provider}`,
            Date: date
         }
     })

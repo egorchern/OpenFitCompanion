@@ -3,6 +3,7 @@ import { DynamoDBDocumentClient, PutCommand} from "@aws-sdk/lib-dynamodb";
 import { getTimestamp } from "../../utilities.mjs";
 import config from "./config.json" assert { type: "json" }
 import { HealthDataType } from "./types.mjs";
+import { ActivityData, SleepData } from "../../types.mjs";
 const dbConfig: DynamoDBClientConfig = {}
 if (process.env.NODE_ENV === "dev"){
     dbConfig.endpoint = config.LocalDbEndpoint
@@ -10,16 +11,17 @@ if (process.env.NODE_ENV === "dev"){
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-export const insertHealthData = async (date: string, type: HealthDataType, provider: string, data:any) => {
-    Object.keys(data).forEach(key => data[key] === undefined ? delete data[key] : {});
-    data.Provider = provider
-    data.CreatedAt = getTimestamp();
-    data.Date = date
-    data.Type = type
+export const insertHealthData = async (date: string, type: HealthDataType, data: ActivityData | SleepData) => {
+    let copy: any = structuredClone(data)
+    Object.keys(copy).forEach((key: any) => copy[key] === undefined ? delete copy[key] : {});
+    copy.Provider = data.provider
+    copy.CreatedAt = getTimestamp();
+    copy.Date = date
+    copy.Type = `${type}_${data.provider}`
     
     const putTokenCommand = new PutCommand({
         TableName: config.healthDataTableName,
-        Item: data,
+        Item: copy,
         
     })
     const response = await ddbDocClient.send(putTokenCommand)
