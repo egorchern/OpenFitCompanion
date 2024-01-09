@@ -1,6 +1,6 @@
 import { getDailySleepSummary } from "../api_requests/oura/sleep/index.mjs";
 import { getDailyAggregatedActivity } from "../api_requests/oura/activity/index.mjs";
-import { ActivityData, ProviderAdapter, SleepData } from "../types.mjs";
+import { ActivityData, Provider, ProviderAdapter, SleepData } from "../types.mjs";
 
 export class OuraAdapter implements ProviderAdapter {
     async getDailyAggregatedActivity (date: string): Promise<ActivityData> {
@@ -13,7 +13,8 @@ export class OuraAdapter implements ProviderAdapter {
             steps: apiData.steps,
             softActivity: apiData.low_activity_time,
             moderateActivity: apiData.medium_activity_time,
-            intenseActivity: apiData.high_activity_time
+            intenseActivity: apiData.high_activity_time,
+            provider: Provider.Oura
         }
     }
     async getDailySleepSummary(date: string): Promise<SleepData> {
@@ -29,7 +30,8 @@ export class OuraAdapter implements ProviderAdapter {
             deepSleepDuration: apiData.deep_sleep_duration,
             remSleepDuration: apiData.rem_sleep_duration,
             sleepLatency: apiData.latency,
-            sleepEfficiency: apiData.efficiency
+            sleepEfficiency: apiData.efficiency,
+            provider: Provider.Oura
         }
     }
 }

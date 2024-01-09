@@ -3,7 +3,8 @@ export interface ActivityData {
     steps: number,
     softActivity: number,
     moderateActivity: number,
-    intenseActivity: number
+    intenseActivity: number,
+    provider: Provider
 }
 export interface SleepData {
     bedtimeStart: string,
@@ -13,7 +14,8 @@ export interface SleepData {
     deepSleepDuration: number,
     remSleepDuration: number,
     sleepLatency: number,
-    sleepEfficiency: number
+    sleepEfficiency: number,
+    provider: Provider
 }
 export const enum Provider {
     Oura,
