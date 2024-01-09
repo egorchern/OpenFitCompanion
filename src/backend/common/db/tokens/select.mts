@@ -17,6 +17,6 @@ export const getToken = async (tokenType: tokenType): Promise<Token> => {
         }
     })
     const response = await ddbDocClient.send(command)
-    console.log(response)
+    
     return response.Item as Token
 }

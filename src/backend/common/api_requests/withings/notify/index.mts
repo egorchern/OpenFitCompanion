@@ -12,7 +12,7 @@ export const subscribe = async (category: notificationCategory) => {
         
     }).toString()
     queryUrl.search += `&callbackurl=${callbackUrl}`
-    console.log(queryUrl.href)
+    
     const response = await fetch(queryUrl, {
         method: "POST",
         headers: new Headers({
@@ -20,5 +20,5 @@ export const subscribe = async (category: notificationCategory) => {
         })
     })
     const result = await response.json()
-    console.log(result)
+    
 }

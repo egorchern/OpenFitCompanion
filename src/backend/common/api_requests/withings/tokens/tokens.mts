@@ -86,7 +86,7 @@ export const requestAccessToken = async (curRefreshToken: string) => {
         }
     })
     const result = await response.json()
-    console.log(result)
+    
     if(!result.body?.access_token){
         throw new Error
     }

@@ -20,6 +20,6 @@ export const enum Provider {
     Withings
 }
 export interface ProviderAdapter {
-    getDailyAggregatedActivity: (startDate: string, endDate: string) => ActivityData,
-    getDailySleepSummary: (startDate: string, endDate: string) => SleepData
+    getDailyAggregatedActivity: (date: string) => Promise<ActivityData>,
+    getDailySleepSummary: (date: string) => Promise<SleepData>
 }

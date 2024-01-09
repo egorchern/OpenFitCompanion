@@ -17,6 +17,7 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
         })
     })
     const result = await response.json()
+    
     if (!result?.body?.series){
         throw new Error
     }

@@ -16,7 +16,7 @@ export const insertHealthData = async (date: string, type: HealthDataType, provi
     data.CreatedAt = getTimestamp();
     data.Date = date
     data.Type = type
-    console.log(data);
+    
     const putTokenCommand = new PutCommand({
         TableName: config.healthDataTableName,
         Item: data,

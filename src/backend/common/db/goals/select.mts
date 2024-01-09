@@ -17,6 +17,6 @@ export const getGoal = async (goalType: GoalType): Promise<Goal> => {
         }
     })
     const response = await ddbDocClient.send(command)
-    console.log(response)
+    
     return response.Item as Goal
 }

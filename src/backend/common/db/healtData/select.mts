@@ -18,6 +18,6 @@ export const selectHealthData = async (date: string, type: HealthDataType) => {
         }
     })
     const response = await ddbDocClient.send(command)
-    console.log(response)
+    
     return response.Item
 }

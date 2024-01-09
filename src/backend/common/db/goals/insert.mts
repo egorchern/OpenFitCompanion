@@ -18,7 +18,7 @@ export const insertGoal = async (goalType: GoalType, value: Number) => {
         CreatedAt: getTimestamp()
     }
 
-    console.log(data);
+    
     const putTokenCommand = new PutCommand({
         TableName: config.tableName,
         Item: data,

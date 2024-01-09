@@ -16,11 +16,11 @@ const getScore = async (startDate: string, endDate: string) => {
         })
     })
     const result = await response.json()
-    if (!result?.data[0]){
+    if (!result?.data){
         throw new Error()
     }
 
-    return result.data[0]
+    return result.data
 }
 
 export const getDailySleepSummary = async (startDate: string, endDate: string) => {
@@ -37,14 +37,15 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
         })
     })
     const result = await response.json()
-    if (!result?.data[0]){
+    if (!result?.data){
         throw new Error()
     }
+    
     const scoreObj = await getScore(startDate, endDate)
-    return {
-        score: scoreObj.score,
-        ...result.data[0]
-    }
+    result.data.forEach((element: { score: any; }, index: string | number)=> {
+        element.score = scoreObj[index].score
+    });
+    
+    return result.data
 }
 
-console.log(await getDailySleepSummary("2024-01-08", "2024-01-09"))

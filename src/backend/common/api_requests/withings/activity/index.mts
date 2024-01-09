@@ -17,7 +17,7 @@ export const getDailyAggregatedActivity = async (startDate: string, endDate: str
         })
     })
     const result = await response.json()
-    console.log(result)
+    
     if (!result?.body?.activities){
         throw new Error
     }
