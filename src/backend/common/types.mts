@@ -18,10 +18,13 @@ export interface SleepData {
     provider: Provider
 }
 export const enum Provider {
-    Oura,
-    Withings
+    Oura = "Oura",
+    Withings = "Withings"
 }
+export type HealthData = SleepData | ActivityData;
 export interface ProviderAdapter {
     getDailyAggregatedActivity: (date: string) => Promise<ActivityData>,
-    getDailySleepSummary: (date: string) => Promise<SleepData>
+    getDailySleepSummary: (date: string) => Promise<SleepData>,
+    processNotification: (obj: any) => Promise<HealthData>,
+    processPOST: (message: any) => any
 }
