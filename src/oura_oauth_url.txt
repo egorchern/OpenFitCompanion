@@ -1,0 +1,1 @@
+https://cloud.ouraring.com/oauth/authorize?response_type=code&client_id=TURM2WR2BBCU3UJV&redirect_uri=https://clvlbqpqkifl2a6naigz23rzsi0rqmvg.lambda-url.us-east-1.on.aws&scope=email+personal+daily+heartrate+workout+tag+session+spo2

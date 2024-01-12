@@ -1,6 +1,7 @@
 import { getDailySleepSummary } from "../api_requests/oura/sleep/index.mjs";
 import { getDailyAggregatedActivity } from "../api_requests/oura/activity/index.mjs";
 import { ActivityData, HealthData, Provider, ProviderAdapter, SleepData } from "../types.mjs";
+import { notificationCategory } from "common/api_requests/oura/notify/types.mjs";
 
 export class OuraAdapter implements ProviderAdapter {
     async getDailyAggregatedActivity (date: string): Promise<ActivityData> {
@@ -35,9 +36,24 @@ export class OuraAdapter implements ProviderAdapter {
         }
     }
     async processNotification(obj: any): Promise<HealthData> {
-        return {} as HealthData;
+        const date = obj.date
+        const type = obj.data_type
+        if (type === notificationCategory.Activity){
+            return this.getDailyAggregatedActivity(date)
+        }
+        else if (type === notificationCategory.Sleep){
+            return this.getDailySleepSummary(date)
+        }
+        else {
+            return this.getDailyAggregatedActivity(date)
+        }
     }
     processPOST (message: any): any {
-        
+        const obj = {
+            provider: Provider.Oura,
+            date: message.event_time,
+            data_type: message.data_type
+        }
+        return obj;
     }
 }
