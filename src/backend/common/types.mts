@@ -1,4 +1,10 @@
-export interface ActivityData {
+import { HealthDataType } from "./db/healtData/types.mjs";
+
+export interface BaseHealthData {
+    provider: Provider,
+    type: HealthDataType
+}
+export interface ActivityData extends BaseHealthData{
     caloriesBurned: number,
     steps: number,
     softActivity: number,
@@ -6,7 +12,7 @@ export interface ActivityData {
     intenseActivity: number,
     provider: Provider
 }
-export interface SleepData {
+export interface SleepData extends BaseHealthData{
     bedtimeStart: string,
     bedtimeEnd: string,
     sleepScore: number,

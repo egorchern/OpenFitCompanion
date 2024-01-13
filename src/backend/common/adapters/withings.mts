@@ -2,6 +2,7 @@ import { getDailyAggregatedActivity } from "../api_requests/withings/activity/in
 import { ActivityData, HealthData, Provider, ProviderAdapter, SleepData } from "../types.mjs";
 import { getDailySleepSummary } from "../api_requests/withings/sleep/index.mjs";
 import { notificationCategory } from "../api_requests/withings/notify/types.mjs";
+import { HealthDataType } from "common/db/healtData/types.mjs";
 
 export class WithingsAdapter implements ProviderAdapter {
     async getDailyAggregatedActivity(date: string): Promise<ActivityData> {
@@ -12,7 +13,8 @@ export class WithingsAdapter implements ProviderAdapter {
             softActivity: apiData.soft,
             moderateActivity: apiData.moderate,
             intenseActivity: apiData.intense,
-            provider: Provider.Withings
+            provider: Provider.Withings,
+            type: HealthDataType.Activity
         }
     }
     async getDailySleepSummary(date: string): Promise<SleepData> {
@@ -26,7 +28,8 @@ export class WithingsAdapter implements ProviderAdapter {
             remSleepDuration: apiData.data.remsleepduration,
             sleepLatency: apiData.data.sleep_latency,
             sleepEfficiency: apiData.data.sleep_efficiency,
-            provider: Provider.Withings
+            provider: Provider.Withings,
+            type: HealthDataType.Sleep
         }
     }
     async processNotification(obj: any): Promise<HealthData> {
@@ -53,5 +56,16 @@ export class WithingsAdapter implements ProviderAdapter {
     }
     processPOST (message: any): any {
         
+        const buff =  Buffer.from(message, 'base64');
+        const text = buff.toString('utf8');
+        const params = new URLSearchParams(text);
+        const obj: any = {
+            provider: Provider.Withings
+        }
+        params.forEach((value, key) => {
+            obj[key] = value
+        })
+        
+        return obj
     }
 }

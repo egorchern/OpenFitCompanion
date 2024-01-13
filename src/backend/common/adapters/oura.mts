@@ -1,7 +1,8 @@
 import { getDailySleepSummary } from "../api_requests/oura/sleep/index.mjs";
 import { getDailyAggregatedActivity } from "../api_requests/oura/activity/index.mjs";
 import { ActivityData, HealthData, Provider, ProviderAdapter, SleepData } from "../types.mjs";
-import { notificationCategory } from "common/api_requests/oura/notify/types.mjs";
+import { notificationCategory } from "../api_requests/oura/notify/types.mjs";
+import { HealthDataType } from "../db/healtData/types.mjs";
 
 export class OuraAdapter implements ProviderAdapter {
     async getDailyAggregatedActivity (date: string): Promise<ActivityData> {
@@ -15,7 +16,8 @@ export class OuraAdapter implements ProviderAdapter {
             softActivity: apiData.low_activity_time,
             moderateActivity: apiData.medium_activity_time,
             intenseActivity: apiData.high_activity_time,
-            provider: Provider.Oura
+            provider: Provider.Oura,
+            type: HealthDataType.Activity
         }
     }
     async getDailySleepSummary(date: string): Promise<SleepData> {
@@ -32,7 +34,8 @@ export class OuraAdapter implements ProviderAdapter {
             remSleepDuration: apiData.rem_sleep_duration,
             sleepLatency: apiData.latency,
             sleepEfficiency: apiData.efficiency,
-            provider: Provider.Oura
+            provider: Provider.Oura,
+            type: HealthDataType.Sleep
         }
     }
     async processNotification(obj: any): Promise<HealthData> {
@@ -49,10 +52,11 @@ export class OuraAdapter implements ProviderAdapter {
         }
     }
     processPOST (message: any): any {
+        const parsed = JSON.parse(message)
         const obj = {
             provider: Provider.Oura,
-            date: message.event_time,
-            data_type: message.data_type
+            date: parsed.event_time,
+            data_type: parsed.data_type
         }
         return obj;
     }
