@@ -10,8 +10,9 @@ export const handler = async (
 ) => {
   for (const record of event.Records) {
     // const message: string = JSON.stringify(record.Sns.Message).replaceAll("\"", "");
-    const obj = JSON.parse(record.Sns.Message);
-    console.log(`Processing: ${obj}`);
+    const message = record.Sns.Message
+    const obj = JSON.parse(message);
+    console.log(`Processing: ${message}`);
     await processNotification(obj)
   }
 };

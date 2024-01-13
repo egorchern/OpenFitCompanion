@@ -3,13 +3,14 @@ import { getDailyAggregatedActivity } from "../api_requests/oura/activity/index.
 import { ActivityData, HealthData, Provider, ProviderAdapter, SleepData } from "../types.mjs";
 import { notificationCategory } from "../api_requests/oura/notify/types.mjs";
 import { HealthDataType } from "../db/healtData/types.mjs";
+import { toShortISODate } from "../utilities.mjs";
 
 export class OuraAdapter implements ProviderAdapter {
     async getDailyAggregatedActivity (date: string): Promise<ActivityData> {
         const curDate = new Date(date)
-        let nextDate = curDate
+        let nextDate = structuredClone(curDate)
         nextDate.setDate(curDate.getDate() + 1)
-        const apiData = (await getDailyAggregatedActivity(date, nextDate.toISOString().slice(0, 10)))[0];
+        const apiData = (await getDailyAggregatedActivity(toShortISODate(curDate), toShortISODate(nextDate)))[0];
         return {
             caloriesBurned: apiData.active_calories,
             steps: apiData.steps,
@@ -22,9 +23,9 @@ export class OuraAdapter implements ProviderAdapter {
     }
     async getDailySleepSummary(date: string): Promise<SleepData> {
         const curDate = new Date(date)
-        let nextDate = curDate
+        let nextDate = structuredClone(curDate)
         nextDate.setDate(curDate.getDate() + 1)
-        const apiData = (await getDailySleepSummary(date, nextDate.toISOString().slice(0, 10)))[0]
+        const apiData = (await getDailySleepSummary(toShortISODate(curDate), toShortISODate(nextDate)))[0]
         return {
             bedtimeStart: apiData.bedtime_start,
             bedtimeEnd: apiData.bedtime_end,

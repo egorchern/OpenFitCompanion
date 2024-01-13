@@ -13,8 +13,3 @@ export const getAdapter = (provider: Provider): ProviderAdapter => {
         default: return new WithingsAdapter();
     }
 }
-
-// const ouraAdapter = getAdapter(Provider.Oura);
-// const withingsAdapter = getAdapter(Provider.Withings)
-// console.log(await ouraAdapter.getDailySleepSummary("2024-01-10"))
-// console.log(await withingsAdapter.getDailySleepSummary("2024-01-10"))
