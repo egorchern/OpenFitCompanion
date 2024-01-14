@@ -22,6 +22,6 @@ const processNotification = async (obj: any) => {
     const provider = obj.provider as Provider
     const adapter = getAdapter(provider);
     const data = await adapter.processNotification(obj);
-    const todayDate = new Date().toISOString().slice(0, 10)
-    await insertHealthData(todayDate, data);
+    
+    await insertHealthData(data);
 }

@@ -2,7 +2,8 @@ import { HealthDataType } from "./db/healtData/types.mjs";
 
 export interface BaseHealthData {
     provider: Provider,
-    type: HealthDataType
+    type: HealthDataType,
+    date: string
 }
 export interface ActivityData extends BaseHealthData{
     caloriesBurned: number,

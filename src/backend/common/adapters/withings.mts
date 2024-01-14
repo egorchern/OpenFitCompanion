@@ -14,7 +14,8 @@ export class WithingsAdapter implements ProviderAdapter {
             moderateActivity: apiData.moderate,
             intenseActivity: apiData.intense,
             provider: Provider.Withings,
-            type: HealthDataType.Activity
+            type: HealthDataType.Activity,
+            date: date
         }
     }
     async getDailySleepSummary(date: string): Promise<SleepData> {
@@ -29,7 +30,8 @@ export class WithingsAdapter implements ProviderAdapter {
             sleepLatency: apiData.data.sleep_latency,
             sleepEfficiency: apiData.data.sleep_efficiency,
             provider: Provider.Withings,
-            type: HealthDataType.Sleep
+            type: HealthDataType.Sleep,
+            date: date
         }
     }
     async processNotification(obj: any): Promise<HealthData> {

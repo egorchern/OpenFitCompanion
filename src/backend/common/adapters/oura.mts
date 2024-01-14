@@ -19,7 +19,8 @@ export class OuraAdapter implements ProviderAdapter {
             moderateActivity: apiData.medium_activity_time,
             intenseActivity: apiData.high_activity_time,
             provider: Provider.Oura,
-            type: HealthDataType.Activity
+            type: HealthDataType.Activity,
+            date: toShortISODate(curDate)
         }
     }
     async getDailySleepSummary(date: string): Promise<SleepData> {
@@ -38,7 +39,8 @@ export class OuraAdapter implements ProviderAdapter {
             sleepLatency: apiData.latency,
             sleepEfficiency: apiData.efficiency,
             provider: Provider.Oura,
-            type: HealthDataType.Sleep
+            type: HealthDataType.Sleep,
+            date: toShortISODate(curDate)
         }
     }
     async processNotification(obj: any): Promise<HealthData> {
