@@ -11,6 +11,7 @@ export class OuraAdapter implements ProviderAdapter {
         let nextDate = structuredClone(curDate)
         nextDate.setDate(curDate.getDate() + 1)
         const apiData = (await getDailyAggregatedActivity(toShortISODate(curDate), toShortISODate(nextDate)))[0];
+        console.log(apiData)
         return {
             caloriesBurned: apiData.active_calories,
             steps: apiData.steps,
@@ -26,6 +27,7 @@ export class OuraAdapter implements ProviderAdapter {
         let nextDate = structuredClone(curDate)
         nextDate.setDate(curDate.getDate() + 1)
         const apiData = (await getDailySleepSummary(toShortISODate(curDate), toShortISODate(nextDate)))[0]
+        console.log(apiData)
         return {
             bedtimeStart: apiData.bedtime_start,
             bedtimeEnd: apiData.bedtime_end,

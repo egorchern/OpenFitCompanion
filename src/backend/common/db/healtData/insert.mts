@@ -11,13 +11,13 @@ if (process.env.NODE_ENV === "dev"){
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-export const insertHealthData = async (date: string, type: HealthDataType, data: ActivityData | SleepData) => {
+export const insertHealthData = async (date: string, data: ActivityData | SleepData) => {
     let copy: any = structuredClone(data)
     Object.keys(copy).forEach((key: any) => copy[key] === undefined ? delete copy[key] : {});
     copy.Provider = data.provider
     copy.CreatedAt = getTimestamp();
     copy.Date = date
-    copy.Type = `${type}_${data.provider}`
+    copy.Type = `${data.type}_${data.provider}`
     
     const putTokenCommand = new PutCommand({
         TableName: config.healthDataTableName,

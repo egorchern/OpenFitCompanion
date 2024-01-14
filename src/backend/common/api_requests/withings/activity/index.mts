@@ -3,6 +3,7 @@ const WithingsMeasureUrl = "https://wbsapi.withings.net/v2/measure"
 
 export const getDailyAggregatedActivity = async (startDate: string, endDate: string) => {
     const accessToken = await getAccessToken()
+    console.log(accessToken)
     const queryUrl = new URL(WithingsMeasureUrl)
     queryUrl.search = new URLSearchParams({
         action: "getactivity",
