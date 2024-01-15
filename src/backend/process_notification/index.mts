@@ -1,8 +1,8 @@
 import { HealthDataType } from "../common/db/healtData/types.mjs";
 import { insertHealthData } from "../common/db/healtData/insert.mjs";
-import { Provider } from "common/types.mjs";
-import { getAdapter } from "common/adapter.mjs";
-import { unify } from "common/data.mjs";
+import { Provider } from "../common/types.mjs";
+import { getAdapter } from "../common/adapter.mjs";
+import { unify } from "../common/data.mjs";
 
 
 export const handler = async (
@@ -26,3 +26,6 @@ const processNotification = async (obj: any) => {
     await insertHealthData(data);
     await unify(data.date, data.type)
 }
+
+await processNotification({"provider":"Oura","date":"2024-01-14T13:38:20.123000+00:00","data_type":"daily_activity"})
+// await processNotification({"provider":"Withings","userid":"36671686","appli":"16","date":"2024-01-14"})

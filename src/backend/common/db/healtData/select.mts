@@ -10,13 +10,14 @@ if (process.env.NODE_ENV === "dev") {
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-export const selectHealthData = async (date: string, type: HealthDataType, provider: Provider): Promise<HealthData> => {
+export const selectHealthData = async (date: string, type: HealthDataType, provider: Provider, consistentRead: boolean): Promise<HealthData> => {
     const command = new GetCommand({
         TableName: config.healthDataTableName,
         Key: {
             Type: `${type}_${provider}`,
             Date: date
-        }
+        },
+        ConsistentRead: consistentRead
     })
 
     const response = await ddbDocClient.send(command)

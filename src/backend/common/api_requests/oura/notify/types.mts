@@ -1,4 +1,5 @@
 export const enum notificationCategory{
-    Sleep = 'daily_sleep',
+    Daily_Sleep = 'daily_sleep',
+    Sleep = 'sleep',
     Activity = 'daily_activity'
 }
