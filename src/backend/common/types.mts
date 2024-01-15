@@ -26,7 +26,8 @@ export interface SleepData extends BaseHealthData{
 }
 export const enum Provider {
     Oura = "Oura",
-    Withings = "Withings"
+    Withings = "Withings",
+    Unified = "Unified"
 }
 export type HealthData = SleepData | ActivityData;
 export interface ProviderAdapter {

@@ -10,6 +10,8 @@ export const getAdapter = (provider: Provider): ProviderAdapter => {
         case Provider.Oura: {
             return new OuraAdapter();
         }
-        default: return new WithingsAdapter();
+        default: {
+            throw new Error("Unified is not a valid provider")
+        }
     }
 }

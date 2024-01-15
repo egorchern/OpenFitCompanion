@@ -28,7 +28,7 @@ export class WithingsAdapter implements ProviderAdapter {
             deepSleepDuration: apiData.data.deepsleepduration,
             remSleepDuration: apiData.data.remsleepduration,
             sleepLatency: apiData.data.sleep_latency,
-            sleepEfficiency: apiData.data.sleep_efficiency,
+            sleepEfficiency: Number((apiData.data.sleep_efficiency * 100).toFixed(0)),
             provider: Provider.Withings,
             type: HealthDataType.Sleep,
             date: date
