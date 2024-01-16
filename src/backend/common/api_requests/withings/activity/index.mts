@@ -20,7 +20,7 @@ export const getDailyAggregatedActivity = async (startDate: string, endDate: str
     const result = await response.json()
     
     if (!result?.body?.activities){
-        throw new Error
+        throw new Error(`${result}`)
     }
     return result.body.activities
 }

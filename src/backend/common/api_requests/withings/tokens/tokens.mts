@@ -3,7 +3,7 @@ import { insertToken } from "../../../db/tokens/insert.mjs"
 import { getToken } from "../../../db/tokens/select.mjs"
 import { tokenType } from "../../../db/tokens/types.mjs"
 import { getTimestamp } from "../../../utilities.mjs"
-import {createHmac} from "crypto"
+import { createHmac } from "crypto"
 
 export const generateHash = (items: string[]) => {
     // concat items
@@ -21,24 +21,26 @@ const WithingsSignatureUrl = "https://wbsapi.withings.net/v2/signature"
 const callback_url = "https://mqlqruemltdxgulrkn2ohwnila0xsmkm.lambda-url.us-east-1.on.aws/"
 
 
-export const getAccessToken = async () => {
+export const getAccessToken = async (): Promise<string> => {
     const curAccessToken = await getToken(tokenType.AccessToken)
     const curEpoch = getTimestamp()
-    if (!curAccessToken || curEpoch >= curAccessToken.createdAt + curAccessToken.expiresIn){
+    if (!curAccessToken || curEpoch >= curAccessToken.createdAt + curAccessToken.expiresIn) {
         const refreshToken = (await getToken(tokenType.RefreshToken))?.value
-        if (!refreshToken){
+        if (!refreshToken) {
             throw new Error("You have not authorized your application with your account")
         }
+
         const temp = await requestAccessToken(refreshToken)
         await Promise.all([insertToken(tokenType.RefreshToken, temp.refreshToken, 1), insertToken(tokenType.AccessToken, temp.accessToken, temp.expiresIn)])
-        
         return temp.accessToken
+
+
     }
     return curAccessToken.value
 }
 
 export const requestRefreshToken = async (authorizationCode: string) => {
-    const {nonce} = await requestNonce()
+    const { nonce } = await requestNonce()
     const signature = generateSignature("requesttoken", nonce)
     let params = new URLSearchParams({
         action: "requesttoken",
@@ -58,22 +60,22 @@ export const requestRefreshToken = async (authorizationCode: string) => {
         }
     })
     const result = await response.json()
-    if(!result.body?.refresh_token){
-        throw new Error
+    if (!result.body?.refresh_token) {
+        throw new Error(`${result}`)
     }
     const refreshToken: string = result.body.refresh_token
     const accessToken: string = result.body.access_token
     const userId: string = result.body.userid
-    return {refreshToken, accessToken, userId}
-    
+    return { refreshToken, accessToken, userId }
+
 }
 
 export const requestAccessToken = async (curRefreshToken: string) => {
-    const {nonce} = await requestNonce()
+    const { nonce } = await requestNonce()
     const signature = generateSignature("requesttoken", nonce)
     let params = new URLSearchParams()
     params.append("action", "requesttoken")
-    params.append("client_id", process.env.WITHINGS_CLIENT_ID ?? "" )
+    params.append("client_id", process.env.WITHINGS_CLIENT_ID ?? "")
     params.append("nonce", nonce)
     params.append("signature", signature)
     params.append("refresh_token", curRefreshToken)
@@ -86,14 +88,15 @@ export const requestAccessToken = async (curRefreshToken: string) => {
         }
     })
     const result = await response.json()
-    
-    if(!result.body?.access_token){
-        throw new Error
+
+    if (!result.body?.access_token) {
+        console.log(result)
+        throw new Error(`${result}`)
     }
     const refreshToken: string = result.body.refresh_token
     const accessToken: string = result.body.access_token
     const expiresIn: number = result.body.expires_in
-    return {refreshToken, accessToken, expiresIn}
+    return { refreshToken, accessToken, expiresIn }
 }
 
 export const requestNonce = async () => {
@@ -110,9 +113,9 @@ export const requestNonce = async () => {
         method: "POST",
     })
     const result = await response.json()
-    if(!result.body?.nonce){
-        throw new Error
+    if (!result.body?.nonce) {
+        throw new Error(`${result}`)
     }
     const nonce = result.body.nonce
-    return {nonce}
+    return { nonce }
 }

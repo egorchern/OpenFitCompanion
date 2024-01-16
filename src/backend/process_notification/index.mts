@@ -27,5 +27,3 @@ const processNotification = async (obj: any) => {
     await unify(data.date, data.type)
 }
 
-await processNotification({"provider":"Oura","date":"2024-01-14T13:38:20.123000+00:00","data_type":"daily_activity"})
-// await processNotification({"provider":"Withings","userid":"36671686","appli":"16","date":"2024-01-14"})

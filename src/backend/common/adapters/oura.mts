@@ -28,8 +28,8 @@ export class OuraAdapter implements ProviderAdapter {
         nextDate.setDate(curDate.getDate() + 1)
         const apiData = (await getDailySleepSummary(toShortISODate(curDate), toShortISODate(nextDate)))[0]
         return {
-            bedtimeStart: apiData.bedtime_start,
-            bedtimeEnd: apiData.bedtime_end,
+            bedtimeStart: Math.floor(new Date(apiData.bedtime_start).getTime() / 1000),
+            bedtimeEnd: Math.floor(new Date(apiData.bedtime_end).getTime() / 1000),
             sleepScore: apiData.score,
             lightSleepDuration: apiData.light_sleep_duration,
             deepSleepDuration: apiData.deep_sleep_duration,

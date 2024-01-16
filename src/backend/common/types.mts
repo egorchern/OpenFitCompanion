@@ -14,8 +14,8 @@ export interface ActivityData extends BaseHealthData{
     provider: Provider
 }
 export interface SleepData extends BaseHealthData{
-    bedtimeStart: string,
-    bedtimeEnd: string,
+    bedtimeStart: number,
+    bedtimeEnd: number,
     sleepScore: number,
     lightSleepDuration: number,
     deepSleepDuration: number,

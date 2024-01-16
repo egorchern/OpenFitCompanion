@@ -21,8 +21,8 @@ export class WithingsAdapter implements ProviderAdapter {
     async getDailySleepSummary(date: string): Promise<SleepData> {
         const apiData = (await getDailySleepSummary(date, date))[0]
         return {
-            bedtimeStart: new Date(apiData.startdate * 1000).toISOString(),
-            bedtimeEnd: new Date(apiData.enddate * 1000).toISOString(),
+            bedtimeStart: apiData.startdate,
+            bedtimeEnd: apiData.enddate,
             sleepScore: apiData.data.sleep_score,
             lightSleepDuration: apiData.data.lightsleepduration,
             deepSleepDuration: apiData.data.deepsleepduration,
