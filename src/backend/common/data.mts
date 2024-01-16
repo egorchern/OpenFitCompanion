@@ -16,17 +16,13 @@ export const unify = async (date: string, type: HealthDataType) => {
 
     }))
     records = records.filter((value) => value)
-    const N = records.length
-    // Can only unify if there are more than 1 records for same provider+date
-    if (N < 2) {
-        return
-    }
+    
     const runningTotals: any = {}
     runningTotals.provider = Provider.Unified
     runningTotals.date = date
     runningTotals.type = type
     const counts: any = {}
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < records.length; i++) {
         const record = records[i];
         Object.keys(record).forEach((key: any) => {
             const value = record[key]
