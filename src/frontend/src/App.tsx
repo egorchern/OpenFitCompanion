@@ -14,6 +14,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <DataGraph
         type={HealthDataType.Activity}
+        startDate='2024-01-18'
+        interval={2}
       />
     </QueryClientProvider>
 

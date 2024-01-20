@@ -3,7 +3,13 @@ export const enum HealthDataType {
     Sleep = "sleep"
 }
 export interface dataGraphProps{
-    type: HealthDataType
+    type: HealthDataType,
+    startDate: string,
+    interval: number
+}
+export interface apiData{
+    provider: Provider,
+    data: HealthData[]
 }
 
 export interface BaseHealthData {

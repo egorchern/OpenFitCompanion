@@ -1,14 +1,15 @@
-import { selectHealthData } from "common/db/healtData/select.mjs";
-import { HealthDataType } from "common/db/healtData/types.mjs";
-import { HealthData, Provider } from "common/types.mjs";
+import { queryHealthData } from "../common/db/healtData/query.mjs";
+import { selectHealthData } from "../common/db/healtData/select.mjs";
+import { HealthDataType } from "../common/db/healtData/types.mjs";
+import { HealthData, Provider } from "../common/types.mjs";
 
 // const getDataBetween = async (startDate: string, endDate: string): Promise<[HealthData]> => {
 //     return selectHealthData()
 // }
 const providers = [Provider.Oura, Provider.Withings, Provider.Unified]
-const getHealthData = async (date: string, type: HealthDataType): Promise<HealthData[]> => {
-    return Promise.all(providers.map((provider) => {
-        return selectHealthData(date, type, provider, true)
+const getHealthDataInRange = async (startDate: string, endDate: string, type: HealthDataType) => {
+    return Promise.all(providers.map(async (provider) => {
+        return {provider: provider, data: await queryHealthData(startDate, endDate, type, provider)}
     }))
     
 }
@@ -29,9 +30,11 @@ export const handler = async (event: any) => {
     }
     if (method === "GET") {
         switch (path) {
-            case ("/activity"): {
-                const date = event?.queryStringParameters?.date
-                const data = await getHealthData(date, HealthDataType.Activity)
+            case ("/activity"): 
+            case ("/sleep"): {
+                const startDate = event?.queryStringParameters?.startdate
+                const endDate = event?.queryStringParameters?.enddate
+                const data = await getHealthDataInRange(startDate, endDate, path.slice(1) as HealthDataType)
                 console.log(data)
                 return {
                     statusCode: 200,
@@ -47,3 +50,18 @@ export const handler = async (event: any) => {
     }
 
 };
+// await handler({
+//     queryStringParameters: {
+//         startdate: "2024-01-10",
+//         enddate: "2024-01-20"
+//     },
+//     requestContext: {
+//         http: {
+//             method: "GET",
+//             path: "/activity"
+//         }
+//     },
+//     headers: {
+//         authorization: `Bearer ${process.env.PERSONAL_SECRET}`
+//     }
+// })
