@@ -4,8 +4,9 @@ export const enum HealthDataType {
 }
 export interface dataGraphProps{
     type: HealthDataType,
-    startDate: string,
-    interval: number
+    startDate: Date,
+    interval: number,
+    propertyName: string
 }
 export interface apiData{
     provider: Provider,

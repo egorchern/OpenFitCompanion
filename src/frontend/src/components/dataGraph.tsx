@@ -16,8 +16,9 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "react-query";
-import { dataGraphProps, apiData, HealthDataType } from './types';
+import { dataGraphProps, apiData, HealthDataType, Provider } from './types';
 import { off } from 'process';
+import { getDateOffset, toShortISODate } from './utilities';
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,18 +29,7 @@ ChartJS.register(
   Legend
 );
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    },
-  },
-};
+
 const PERSONAL_SECRET = localStorage.getItem("PERSONAL_SECRET")
 function useData(startDate: string, endDate: string, type: HealthDataType){
   return useQuery("healthData", async () => {
@@ -58,42 +48,70 @@ function useData(startDate: string, endDate: string, type: HealthDataType){
   })
 }
 const baseApi = 'https://j36jvcdbxaumnmb7odfz64rjoa0ozyzj.lambda-url.us-east-1.on.aws'
-
-const toShortISODate = (date: Date): string => {
-  return date.toISOString().slice(0, 10)
-}
-
-const getDateOffset = (startDate: string, offset: number) => {
-  let tempDate = new Date(startDate)
-  tempDate.setDate(tempDate.getDate() + offset)
-  const endDate = toShortISODate(tempDate)
-  return endDate
-}
+const providerToColor: any = {}
+providerToColor[Provider.Oura] = "rgb(255, 99, 132)"
+providerToColor[Provider.Withings] = "rgb(53, 162, 235)"
+providerToColor[Provider.Unified] = "rgb(20, 225, 129)"
 
 export default function DataGraph(props: dataGraphProps) {
-  const {type, startDate, interval} = props
+  
+  const {type, startDate, interval, propertyName} = props
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: `Health Data in past ${interval} days`,
+      },
+    },
+    scales: {
+      y: {
+        min: 0,
+        title: {
+          display: true,
+          text: propertyName,
+          
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Date",
+          
+        }
+      }
+    }
+  };
   const queryClient = useQueryClient();
   const endDate = getDateOffset(startDate, interval)
-  const {status, data, error, isFetching } = useData(startDate, endDate, type);
+  const {status, data, error, isFetching } = useData(toShortISODate(startDate), toShortISODate(endDate), type);
   
-  const propertyName = "sleepScore"
   const graphData = useMemo(() => {
-    return status === "success" ? {
-      labels: Array.from(Array(interval).keys()).map((offset) => {
-        return getDateOffset(startDate, offset)
+    if (status !== "success" || !data){
+      return {}
+    }
+    const refDate = new Date(data[0].data[0].Date)
+    return {
+      labels: data[0].data.map((v: any, offset: number) => {
+        return toShortISODate(getDateOffset(refDate, offset))
       }),
       datasets: data.map((value: any) => {
         return {
           data: value.data.map((datum: any) => {
             return datum[propertyName]
           }),
-          label: value.provider
+          label: value.provider,
+          borderColor: providerToColor[value.provider],
+          backgroundColor: providerToColor[value.provider]
         }
         
         
       })
-    } : {}
-  }, [data, interval, startDate, status])
+    }
+  }, [data, startDate, status, propertyName])
   return (
     <div>
       {status === 'success' ? 
@@ -102,6 +120,13 @@ export default function DataGraph(props: dataGraphProps) {
             options={options}
             data={graphData as any} 
           />
+        ) : null
+      }
+      {
+        error ? (
+          <span>
+            {error as any}
+          </span>
         ) : null
       }
       

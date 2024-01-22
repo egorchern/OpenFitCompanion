@@ -7,15 +7,18 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "react-query";
+import { getDateOffset } from './components/utilities';
 
 const queryClient = new QueryClient();
+const PAST_DAYS_N = 7
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <DataGraph
         type={HealthDataType.Activity}
-        startDate='2024-01-18'
-        interval={2}
+        startDate={getDateOffset(new Date(), -PAST_DAYS_N)}
+        interval={PAST_DAYS_N}
+        propertyName='moderateActivity'
       />
     </QueryClientProvider>
 
