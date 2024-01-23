@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import DataGraph from './components/dataGraph';
-import { ActivityData, HealthDataType, SleepData } from './components/types';
+import { ActivityData, HealthDataType, SleepData, readableActivityData, readableSleepData } from './components/types';
 import {
   useQuery,
   useQueryClient,
@@ -17,13 +17,12 @@ function App() {
   const [curPropertyName, setCurPropertyName] = useState("");
   const [curDataType, setCurDataType] = useState(HealthDataType.Sleep)
   const sleepPropertyNames = useMemo(() => {
-    const temp = new SleepData()
-    return Object.keys(temp)
+    
+    return Object.keys(readableSleepData)
 
   }, [])
   const activityPropertyNames = useMemo(() => {
-    const temp = new ActivityData()
-    return Object.keys(temp)
+    return Object.keys(readableActivityData)
 
   }, [])
   const handlePropertyBtnClick = (type: HealthDataType, propertyName: string) => {
@@ -31,7 +30,16 @@ function App() {
       return
     }
     setCurDataType(type)
-    setCurPropertyName(propertyName)
+    switch (type){
+      case (HealthDataType.Activity): {
+        setCurPropertyName(readableActivityData[propertyName])
+        break;
+      }
+      case (HealthDataType.Sleep): {
+        setCurPropertyName(readableSleepData[propertyName])
+        break;
+      }
+    }
   }
   return (
     <QueryClientProvider client={queryClient}>

@@ -28,6 +28,13 @@ export class ActivityData implements BaseHealthData{
     type!: HealthDataType
     date!: string;
 }
+export const readableActivityData: any = {
+    "Active Calories": "caloriesBurned",
+    "Steps": "steps",
+    "Soft Activity (s)": "softActivity",
+    "Moderate Activity (s)": "moderateActivity",
+    "Intense Activity (s)": "intenseActivity",
+}
 export class SleepData implements BaseHealthData{
     bedtimeStart!: number;
     bedtimeEnd!: number;
@@ -40,6 +47,15 @@ export class SleepData implements BaseHealthData{
     provider!: Provider;
     type!: HealthDataType
     date!: string;
+}
+
+export const readableSleepData: any = {
+    "Total Duration (m)": "totalSleepDuration",
+    "Score": "sleepScore",
+    "Light Duration (s)": "lightSleepDuration",
+    "Deep Duration (s)": "deepSleepDuration",
+    "REM Duration (s)": "remSleepDuration",
+    "Latency": "sleepLatency"
 }
 export const enum Provider {
     Oura = "Oura",
