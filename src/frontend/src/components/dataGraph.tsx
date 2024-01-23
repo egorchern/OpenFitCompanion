@@ -32,7 +32,7 @@ ChartJS.register(
 
 const PERSONAL_SECRET = localStorage.getItem("PERSONAL_SECRET")
 function useData(startDate: string, endDate: string, type: HealthDataType){
-  return useQuery("healthData", async () => {
+  return useQuery(`${type}`, async () => {
     const url = new URL(`${baseApi}/${type}`)
     url.searchParams.set("startdate", startDate)
     url.searchParams.set("enddate", endDate)
@@ -45,6 +45,8 @@ function useData(startDate: string, endDate: string, type: HealthDataType){
     const result = await response.json()
     console.log(result)
     return result
+  }, {
+    staleTime: 60000
   })
 }
 const baseApi = 'https://j36jvcdbxaumnmb7odfz64rjoa0ozyzj.lambda-url.us-east-1.on.aws'
@@ -56,6 +58,7 @@ providerToColor[Provider.Unified] = "rgb(20, 225, 129)"
 export default function DataGraph(props: dataGraphProps) {
   
   const {type, startDate, interval, propertyName} = props
+  
   const options = {
     responsive: true,
     plugins: {
@@ -64,7 +67,7 @@ export default function DataGraph(props: dataGraphProps) {
       },
       title: {
         display: true,
-        text: `Health Data in past ${interval} days`,
+        text: `${type} : ${propertyName} in past ${interval} days`,
       },
     },
     scales: {
@@ -88,7 +91,7 @@ export default function DataGraph(props: dataGraphProps) {
   const queryClient = useQueryClient();
   const endDate = getDateOffset(startDate, interval)
   const {status, data, error, isFetching } = useData(toShortISODate(startDate), toShortISODate(endDate), type);
-  
+  console.log(data)
   const graphData = useMemo(() => {
     if (status !== "success" || !data){
       return {}
@@ -111,9 +114,9 @@ export default function DataGraph(props: dataGraphProps) {
         
       })
     }
-  }, [data, startDate, status, propertyName])
+  }, [data, status, propertyName])
   return (
-    <div>
+    <div className='full-width'>
       {status === 'success' ? 
         (
           <Line

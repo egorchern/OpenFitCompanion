@@ -18,24 +18,28 @@ export interface BaseHealthData {
     type: HealthDataType,
     date: string
 }
-export interface ActivityData extends BaseHealthData{
-    caloriesBurned: number,
-    steps: number,
-    softActivity: number,
-    moderateActivity: number,
-    intenseActivity: number,
-    provider: Provider
+export class ActivityData implements BaseHealthData{
+    caloriesBurned!: number;
+    steps!: number;
+    softActivity!: number;
+    moderateActivity!: number;
+    intenseActivity!: number;
+    provider!: Provider
+    type!: HealthDataType
+    date!: string;
 }
-export interface SleepData extends BaseHealthData{
-    bedtimeStart: number,
-    bedtimeEnd: number,
-    sleepScore: number,
-    lightSleepDuration: number,
-    deepSleepDuration: number,
-    remSleepDuration: number,
-    sleepLatency: number,
-    sleepEfficiency: number,
-    provider: Provider
+export class SleepData implements BaseHealthData{
+    bedtimeStart!: number;
+    bedtimeEnd!: number;
+    sleepScore!: number;
+    lightSleepDuration!: number;
+    deepSleepDuration!: number;
+    remSleepDuration!: number;
+    sleepLatency!: number;
+    sleepEfficiency!: number;
+    provider!: Provider;
+    type!: HealthDataType
+    date!: string;
 }
 export const enum Provider {
     Oura = "Oura",
