@@ -1,3 +1,4 @@
+import { exportHealthData } from "common/export.mjs";
 import { queryHealthData } from "../common/db/healtData/query.mjs";
 import { selectHealthData } from "../common/db/healtData/select.mjs";
 import { HealthDataType } from "../common/db/healtData/types.mjs";
@@ -35,10 +36,18 @@ export const handler = async (event: any) => {
                 const startDate = event?.queryStringParameters?.startdate
                 const endDate = event?.queryStringParameters?.enddate
                 const data = await getHealthDataInRange(startDate, endDate, path.slice(1) as HealthDataType)
-                console.log(data)
                 return {
                     statusCode: 200,
                     body: JSON.stringify(data)
+                }
+            }
+            case ("/export"): {
+                const downloadUrl = await exportHealthData()
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({
+                        "URL": downloadUrl
+                    })
                 }
             }
             default: {
