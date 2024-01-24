@@ -28,10 +28,7 @@ export const exportHealthData = async () => {
     const csv = await json2csv(data, {
         emptyFieldValue: ""
     })
-    console.log(csv)
     const filename = `healthData_${new Date().toISOString().substring(0, 19).replaceAll(":", "_", )}.csv`
     // upload to s3
     return getDownloadURL(csv, filename)
 }
-
-console.log(await exportHealthData())

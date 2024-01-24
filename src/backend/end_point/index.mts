@@ -43,6 +43,7 @@ export const handler = async (event: any) => {
             }
             case ("/export"): {
                 const downloadUrl = await exportHealthData()
+                console.log(downloadUrl)
                 return {
                     statusCode: 200,
                     body: JSON.stringify({
