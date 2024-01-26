@@ -9,57 +9,73 @@ import { HealthData, Provider } from "../common/types.mjs";
 // }
 const providers = [Provider.Oura, Provider.Withings, Provider.Unified]
 const getHealthDataInRange = async (startDate: string, endDate: string, type: HealthDataType) => {
-    return Promise.all(providers.map(async (provider) => {
-        return {provider: provider, data: await queryHealthData(startDate, endDate, type, provider)}
-    }))
-    
+  return Promise.all(providers.map(async (provider) => {
+    return { provider: provider, data: await queryHealthData(startDate, endDate, type, provider) }
+  }))
+
 }
 
 export const handler = async (event: any) => {
-    if (typeof event === 'string') {
-        event = JSON.parse(event);
+  if (typeof event === 'string') {
+    event = JSON.parse(event);
+  }
+  console.log(event)
+  const method = event?.requestContext?.http?.method
+  const path = event?.requestContext?.http?.path
+  const secret = event?.headers?.authorization
+  const referenceSecret = `Bearer ${process.env.PERSONAL_SECRET}`
+  if (!method || !path || !secret || secret !== referenceSecret) {
+    return {
+      statusCode: 400
     }
-    console.log(event)
-    const method = event?.requestContext?.http?.method
-    const path = event?.requestContext?.http?.path
-    const secret = event?.headers?.authorization
-    const referenceSecret = `Bearer ${process.env.PERSONAL_SECRET}`
-    if (!method || !path || !secret || secret !== referenceSecret) {
-        return {
-            statusCode: 400
+  }
+  switch (method) {
+    case ("GET"): {
+      switch (path) {
+        case ("/activity"):
+        case ("/sleep"): {
+          const startDate = event?.queryStringParameters?.startdate
+          const endDate = event?.queryStringParameters?.enddate
+          const data = await getHealthDataInRange(startDate, endDate, path.slice(1) as HealthDataType)
+          return {
+            statusCode: 200,
+            body: JSON.stringify(data)
+          }
         }
-    }
-    if (method === "GET") {
-        switch (path) {
-            case ("/activity"): 
-            case ("/sleep"): {
-                const startDate = event?.queryStringParameters?.startdate
-                const endDate = event?.queryStringParameters?.enddate
-                const data = await getHealthDataInRange(startDate, endDate, path.slice(1) as HealthDataType)
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify(data)
-                }
-            }
-            case ("/export"): {
-                const downloadUrl = await exportHealthData()
-                console.log(downloadUrl)
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({
-                        "URL": downloadUrl
-                    })
-                }
-            }
-            default: {
-                return {
-                    statusCode: 400
-                }
-            }
-        }
-    }
 
-};
+        default: {
+          return {
+            statusCode: 400
+          }
+        }
+      }
+    }
+    case ("POST"): {
+      switch (path) {
+        case ("/export"): {
+          const downloadUrl = await exportHealthData()
+
+          return {
+            statusCode: 200,
+            body: JSON.stringify({
+              "URL": downloadUrl
+            })
+          }
+        }
+      }
+
+    }
+    default: {
+      return {
+        statusCode: 400
+      }
+    }
+  }
+
+
+}
+
+
 // await handler({
 //     queryStringParameters: {
 //         startdate: "2024-01-10",
