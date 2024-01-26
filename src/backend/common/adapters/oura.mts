@@ -27,9 +27,12 @@ export class OuraAdapter implements ProviderAdapter {
         let nextDate = structuredClone(curDate)
         nextDate.setDate(curDate.getDate() + 1)
         const apiData = (await getDailySleepSummary(toShortISODate(curDate), toShortISODate(nextDate)))[0]
+        const bedtimeStart = Math.floor(new Date(apiData.bedtime_start).getTime() / 1000)
+        const bedtimeEnd = Math.floor(new Date(apiData.bedtime_end).getTime() / 1000)
+        const totalSleepDuration = Math.floor((bedtimeEnd - bedtimeStart) / 60 / 60)
         return {
-            bedtimeStart: Math.floor(new Date(apiData.bedtime_start).getTime() / 1000),
-            bedtimeEnd: Math.floor(new Date(apiData.bedtime_end).getTime() / 1000),
+            bedtimeStart: bedtimeStart,
+            bedtimeEnd: bedtimeEnd,
             sleepScore: apiData.score,
             lightSleepDuration: apiData.light_sleep_duration,
             deepSleepDuration: apiData.deep_sleep_duration,
@@ -38,8 +41,10 @@ export class OuraAdapter implements ProviderAdapter {
             sleepEfficiency: apiData.efficiency,
             provider: Provider.Oura,
             type: HealthDataType.Sleep,
-            date: toShortISODate(curDate)
+            date: toShortISODate(curDate),
+            totalSleepDuration: totalSleepDuration
         }
+       
     }
     async processNotification(obj: any): Promise<HealthData> {
         const date = obj.date

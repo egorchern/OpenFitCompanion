@@ -4,7 +4,7 @@ import { json2csv } from "json-2-csv"
 import { getTimestamp } from "./utilities.mjs"
 import { PutObjectCommand, S3Client, GetObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-const bucketName = "test1200r35225"
+const bucketName = "open-fit-companion"
 const linkExpirySeconds = 60 * 5
 const client = new S3Client({});
 const getDownloadURL = async (csvData: string, filename: string) => {
@@ -32,3 +32,5 @@ export const exportHealthData = async () => {
     // upload to s3
     return getDownloadURL(csv, filename)
 }
+
+console.log(await exportHealthData())

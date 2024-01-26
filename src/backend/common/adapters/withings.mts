@@ -20,6 +20,9 @@ export class WithingsAdapter implements ProviderAdapter {
     }
     async getDailySleepSummary(date: string): Promise<SleepData> {
         const apiData = (await getDailySleepSummary(date, date))[0]
+        const bedtimeStart = apiData.startdate
+        const bedtimeEnd = apiData.enddate
+        const totalSleepDuration = Math.floor((bedtimeEnd - bedtimeStart) / 60 / 60)
         return {
             bedtimeStart: apiData.startdate,
             bedtimeEnd: apiData.enddate,
@@ -31,7 +34,8 @@ export class WithingsAdapter implements ProviderAdapter {
             sleepEfficiency: Number((apiData.data.sleep_efficiency * 100).toFixed(0)),
             provider: Provider.Withings,
             type: HealthDataType.Sleep,
-            date: date
+            date: date,
+            totalSleepDuration: totalSleepDuration
         }
     }
     async processNotification(obj: any): Promise<HealthData> {

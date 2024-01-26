@@ -11,7 +11,6 @@ export interface ActivityData extends BaseHealthData{
     softActivity: number,
     moderateActivity: number,
     intenseActivity: number,
-    provider: Provider
 }
 export interface SleepData extends BaseHealthData{
     bedtimeStart: number,
@@ -22,7 +21,7 @@ export interface SleepData extends BaseHealthData{
     remSleepDuration: number,
     sleepLatency: number,
     sleepEfficiency: number,
-    provider: Provider
+    totalSleepDuration: number
 }
 export const enum Provider {
     Oura = "Oura",
