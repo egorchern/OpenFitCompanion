@@ -1,82 +1,22 @@
-import React, { useMemo, useState } from 'react';
-import DataGraph from './components/dataGraph';
-import { ActivityData, HealthDataType, SleepData, readableActivityData, readableSleepData } from './components/types';
+
 import {
-  useQuery,
-  useQueryClient,
   QueryClient,
   QueryClientProvider,
 } from "react-query";
-import { getDateOffset } from './components/utilities';
-import Button from '@mui/material/Button';
 import '@fontsource/roboto'
+import DataVisualiser from './components/dataVisualiser';
+import Export from "./components/export";
 
 const queryClient = new QueryClient();
-const PAST_DAYS_N = 7
+
 function App() {
-  const [curPropertyName, setCurPropertyName] = useState("");
-  const [curDataType, setCurDataType] = useState(HealthDataType.Sleep)
-  const sleepPropertyNames = useMemo(() => {
-    
-    return Object.keys(readableSleepData)
-
-  }, [])
-  const activityPropertyNames = useMemo(() => {
-    return Object.keys(readableActivityData)
-
-  }, [])
-  const handlePropertyBtnClick = (type: HealthDataType, propertyName: string) => {
-    if (propertyName === curPropertyName && type === curDataType) {
-      return
-    }
-    setCurDataType(type)
-    switch (type){
-      case (HealthDataType.Activity): {
-        setCurPropertyName(readableActivityData[propertyName])
-        break;
-      }
-      case (HealthDataType.Sleep): {
-        setCurPropertyName(readableSleepData[propertyName])
-        break;
-      }
-    }
-  }
   return (
     <QueryClientProvider client={queryClient}>
-      <div className='flex-vertical'>
-
-        <DataGraph
-          type={curDataType}
-          startDate={getDateOffset(new Date(), -PAST_DAYS_N)}
-          interval={PAST_DAYS_N}
-          propertyName={curPropertyName}
-        />
-
-        <h3>Activity</h3>
-        <div className='flex-horizontal'>
-          {
-            activityPropertyNames.map((name: string) => {
-              return (
-                <Button key={name} variant='contained' onClick={() => { handlePropertyBtnClick(HealthDataType.Activity, name) }}>
-                  {name}
-                </Button>
-              )
-            })
-          }
-        </div>
-        <h3>Sleep</h3>
-        <div className='flex-horizontal'>
-          {
-            sleepPropertyNames.map((name: string) => {
-              return (
-                <Button key={name} variant='contained' onClick={() => { handlePropertyBtnClick(HealthDataType.Sleep, name) }}>
-                  {name}
-                </Button>
-              )
-            })
-          }
-        </div>
-      </div>
+      <main className="flex-vertical">
+        <DataVisualiser />
+        <Export/>
+      </main>
+      
 
 
     </QueryClientProvider>
