@@ -15,7 +15,8 @@ export const getToken = async (tokenType: tokenType): Promise<Token> => {
         TableName: config.tokens_table_name,
         Key: {
             TokenType: tokenType
-        }
+        },
+        ConsistentRead: true
     })
     const response  = await client.send(command)
     return response.Item as Token

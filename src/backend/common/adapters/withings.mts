@@ -2,9 +2,9 @@ import { getDailyAggregatedActivity } from "../api_requests/withings/activity/in
 import { ActivityData, HealthData, Provider, ProviderAdapter, SleepData } from "../types.mjs";
 import { getDailySleepSummary } from "../api_requests/withings/sleep/index.mjs";
 import { notificationCategory } from "../api_requests/withings/notify/types.mjs";
-import { HealthDataType } from "common/db/healtData/types.mjs";
-import { getAccessToken } from "common/api_requests/withings/tokens/tokens.mjs";
-import { getRandomInt, sleep } from "common/utilities.mjs";
+import { HealthDataType } from "../db/healtData/types.mjs";
+import { getAccessToken } from "../api_requests/withings/tokens/tokens.mjs";
+import { getRandomInt, sleep } from "../utilities.mjs";
 
 
 export class WithingsAdapter implements ProviderAdapter {

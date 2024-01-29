@@ -1,9 +1,9 @@
-import { GoalType } from "../common/db/goals/types.mjs"
-import { getGoal } from "../common/db/goals/select.mjs"
-import config from "./config.json" assert { type: "json" }
-import { selectHealthData } from "../common/db/healtData/select.mjs";
-import { HealthDataType } from "../common/db/healtData/types.mjs";
-import { sendPushNotification } from "../common/webpush.mjs";
+// import { GoalType } from "../common/db/goals/types.mjs"
+// import { getGoal } from "../common/db/goals/select.mjs"
+// import config from "./config.json" assert { type: "json" }
+// import { selectHealthData } from "../common/db/healtData/select.mjs";
+// import { HealthDataType } from "../common/db/healtData/types.mjs";
+// import { sendPushNotification } from "../common/webpush.mjs";
 // export const handler = async (event: any) => {
 //     // Fetch goals
 //     const stepsGoal = (await getGoal(GoalType.STEPS)).Value;
