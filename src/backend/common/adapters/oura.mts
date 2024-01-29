@@ -44,7 +44,8 @@ export class OuraAdapter implements ProviderAdapter {
             provider: Provider.Oura,
             type: HealthDataType.Sleep,
             date: toShortISODate(curDate),
-            totalSleepDuration: totalSleepDuration
+            totalSleepDuration: totalSleepDuration,
+            averageHR: apiData.average_heart_rate
         }
        
     }

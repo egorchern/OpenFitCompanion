@@ -8,7 +8,7 @@ export const getDailySleepSummary = async (accessToken: string, startDate: strin
         startdateymd: startDate,
         enddateymd: endDate,
     }).toString()
-    queryUrl.search += "&data_fields=lightsleepduration,deepsleepduration,remsleepduration,sleep_score,sleep_latency,sleep_efficiency"
+    queryUrl.search += "&data_fields=lightsleepduration,deepsleepduration,remsleepduration,sleep_score,sleep_latency,sleep_efficiency,hr_average"
     const response = await fetch(queryUrl, {
         method: "POST",
         headers: new Headers({

@@ -59,7 +59,8 @@ export class WithingsAdapter implements ProviderAdapter {
             provider: Provider.Withings,
             type: HealthDataType.Sleep,
             date: date,
-            totalSleepDuration: totalSleepDuration
+            totalSleepDuration: totalSleepDuration,
+            averageHR: apiData.data.hr_average
         }
     }
     async processNotification(obj: any): Promise<HealthData> {
