@@ -1,9 +1,7 @@
 import { getAccessToken } from "../tokens/tokens.mjs"
 const WithingsMeasureUrl = "https://wbsapi.withings.net/v2/measure"
 
-export const getDailyAggregatedActivity = async (startDate: string, endDate: string) => {
-    const accessToken = await getAccessToken()
-    console.log(accessToken)
+export const getDailyAggregatedActivity = async (accessToken: string, startDate: string, endDate: string) => {
     const queryUrl = new URL(WithingsMeasureUrl)
     queryUrl.search = new URLSearchParams({
         action: "getactivity",

@@ -3,10 +3,31 @@ import { ActivityData, HealthData, Provider, ProviderAdapter, SleepData } from "
 import { getDailySleepSummary } from "../api_requests/withings/sleep/index.mjs";
 import { notificationCategory } from "../api_requests/withings/notify/types.mjs";
 import { HealthDataType } from "common/db/healtData/types.mjs";
+import { getAccessToken } from "common/api_requests/withings/tokens/tokens.mjs";
+import { getRandomInt, sleep } from "common/utilities.mjs";
+
 
 export class WithingsAdapter implements ProviderAdapter {
+    authTokenMaxRetries = 3
+    async handleAccessToken(){
+        let accessToken;
+        let retryCnt = 0
+        while (retryCnt < this.authTokenMaxRetries){
+            try {
+                accessToken = await getAccessToken()
+            } catch (err) {
+                retryCnt++
+                await sleep(getRandomInt(800, 1600))
+            }
+        } 
+        if (!accessToken){
+            throw new Error ("Withings: too access token many retries")
+        }
+        return accessToken
+    }
     async getDailyAggregatedActivity(date: string): Promise<ActivityData> {
-        const apiData = (await getDailyAggregatedActivity(date, date))[0];
+        const accessToken = await this.handleAccessToken()
+        const apiData = (await getDailyAggregatedActivity(accessToken, date, date))[0];
         console.log(apiData)
         return {
             caloriesBurned: apiData.calories,
@@ -20,7 +41,8 @@ export class WithingsAdapter implements ProviderAdapter {
         }
     }
     async getDailySleepSummary(date: string): Promise<SleepData> {
-        const apiData = (await getDailySleepSummary(date, date))[0]
+        const accessToken = await this.handleAccessToken()
+        const apiData = (await getDailySleepSummary(accessToken, date, date))[0]
         const bedtimeStart = apiData.startdate
         const bedtimeEnd = apiData.enddate
         const totalSleepDuration = Math.floor((bedtimeEnd - bedtimeStart) / 60)

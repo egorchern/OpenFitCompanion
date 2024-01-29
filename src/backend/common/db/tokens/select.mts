@@ -10,27 +10,14 @@ if (process.env.NODE_ENV === "dev"){
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-export const getToken = async (tokenType: tokenType): Promise<Token | null> => {
-    const command = new TransactGetCommand({
-        TransactItems: [{
-            Get: {
-                Key: {
-                    TokenType: tokenType
-                },
-                TableName: config.tokens_table_name
-            }
-        }]
-    })
-    try {
-        const response = await ddbDocClient.send(command)
-        if (!response?.Responses){
-            return null
+export const getToken = async (tokenType: tokenType): Promise<Token> => {
+    const command = new GetCommand({
+        TableName: config.tokens_table_name,
+        Key: {
+            TokenType: tokenType
         }
-        return response.Responses[0].Item as Token
-    }   
-    catch {
-        await sleep(getRandomInt(200, 1000))
-        return getToken(tokenType)
-    }
+    })
+    const response  = await client.send(command)
+    return response.Item as Token
     
 }

@@ -1,8 +1,7 @@
 import { getAccessToken } from "../tokens/tokens.mjs"
 const baseUrl = "https://wbsapi.withings.net/v2/sleep"
 
-export const getDailySleepSummary = async (startDate: string, endDate: string) => {
-    const accessToken = await getAccessToken()
+export const getDailySleepSummary = async (accessToken: string, startDate: string, endDate: string) => {
     const queryUrl = new URL(baseUrl)
     queryUrl.search = new URLSearchParams({
         action: "getsummary",
