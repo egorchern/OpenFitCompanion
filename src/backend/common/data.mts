@@ -15,7 +15,7 @@ export const unify = async (date: string, type: HealthDataType) => {
         }
 
     }))
-    records = records.filter((value) => value)
+    records = records.filter((value) => !!value)
     
     const runningTotals: any = {}
     runningTotals.provider = Provider.Unified

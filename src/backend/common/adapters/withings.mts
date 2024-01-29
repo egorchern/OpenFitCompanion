@@ -7,6 +7,7 @@ import { HealthDataType } from "common/db/healtData/types.mjs";
 export class WithingsAdapter implements ProviderAdapter {
     async getDailyAggregatedActivity(date: string): Promise<ActivityData> {
         const apiData = (await getDailyAggregatedActivity(date, date))[0];
+        console.log(apiData)
         return {
             caloriesBurned: apiData.calories,
             steps: apiData.steps,
@@ -23,6 +24,7 @@ export class WithingsAdapter implements ProviderAdapter {
         const bedtimeStart = apiData.startdate
         const bedtimeEnd = apiData.enddate
         const totalSleepDuration = Math.floor((bedtimeEnd - bedtimeStart) / 60 / 60)
+        console.log(apiData)
         return {
             bedtimeStart: apiData.startdate,
             bedtimeEnd: apiData.enddate,

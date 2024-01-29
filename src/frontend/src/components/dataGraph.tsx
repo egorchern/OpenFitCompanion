@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 
-const PERSONAL_SECRET = localStorage.getItem("PERSONAL_SECRET")
+const PERSONAL_SECRET = localStorage.getItem("API_SECRET")
 function useData(startDate: string, endDate: string, type: HealthDataType){
   return useQuery(`${type}`, async () => {
     const url = new URL(`${baseApi}/${type}`)
@@ -42,11 +42,16 @@ function useData(startDate: string, endDate: string, type: HealthDataType){
       },
       method: "GET"
     })
+    if (!response.ok){
+      console.log("err")
+      throw Error("bad token")
+    }
     const result = await response.json()
     console.log(result)
     return result
   }, {
-    staleTime: 60000
+    staleTime: 60000,
+    retry: 0
   })
 }
 const baseApi = 'https://j36jvcdbxaumnmb7odfz64rjoa0ozyzj.lambda-url.us-east-1.on.aws'
@@ -91,9 +96,8 @@ export default function DataGraph(props: dataGraphProps) {
   const queryClient = useQueryClient();
   const endDate = getDateOffset(startDate, interval)
   const {status, data, error, isFetching } = useData(toShortISODate(startDate), toShortISODate(endDate), type);
-  console.log(data)
   const graphData = useMemo(() => {
-    if (status !== "success" || !data){
+    if (error || status !== "success" || !data){
       return {}
     }
     const refDate = new Date(data[0].data[0].Date)
@@ -114,7 +118,7 @@ export default function DataGraph(props: dataGraphProps) {
         
       })
     }
-  }, [data, status, propertyName])
+  }, [data, status, error, propertyName])
   return (
     <div className='full-width'>
       {status === 'success' ? 
@@ -128,7 +132,7 @@ export default function DataGraph(props: dataGraphProps) {
       {
         error ? (
           <span>
-            {error as any}
+            {String(error)}
           </span>
         ) : null
       }
