@@ -31,7 +31,7 @@ export class OuraAdapter implements ProviderAdapter {
         console.log(apiData)
         const bedtimeStart = Math.floor(new Date(apiData.bedtime_start).getTime() / 1000)
         const bedtimeEnd = Math.floor(new Date(apiData.bedtime_end).getTime() / 1000)
-        const totalSleepDuration = Math.floor((bedtimeEnd - bedtimeStart) / 60 / 60)
+        const totalSleepDuration = Math.floor((bedtimeEnd - bedtimeStart) / 60)
         return {
             bedtimeStart: bedtimeStart,
             bedtimeEnd: bedtimeEnd,

@@ -23,7 +23,7 @@ export class WithingsAdapter implements ProviderAdapter {
         const apiData = (await getDailySleepSummary(date, date))[0]
         const bedtimeStart = apiData.startdate
         const bedtimeEnd = apiData.enddate
-        const totalSleepDuration = Math.floor((bedtimeEnd - bedtimeStart) / 60 / 60)
+        const totalSleepDuration = Math.floor((bedtimeEnd - bedtimeStart) / 60)
         console.log(apiData)
         return {
             bedtimeStart: apiData.startdate,
