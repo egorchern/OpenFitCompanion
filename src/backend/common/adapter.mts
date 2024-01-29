@@ -15,3 +15,5 @@ export const getAdapter = (provider: Provider): ProviderAdapter => {
         }
     }
 }
+const adapter = getAdapter(Provider.Oura)
+console.log(await adapter.getDailySleepSummary("2024-01-29"))
