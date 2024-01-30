@@ -15,6 +15,7 @@ export class WithingsAdapter implements ProviderAdapter {
         while (retryCnt < this.authTokenMaxRetries){
             try {
                 accessToken = await getAccessToken()
+                break
             } catch (err) {
                 retryCnt++
                 await sleep(getRandomInt(800, 1600))

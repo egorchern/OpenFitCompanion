@@ -55,7 +55,9 @@ export const readableSleepData: any = {
     "Light Duration (s)": "lightSleepDuration",
     "Deep Duration (s)": "deepSleepDuration",
     "REM Duration (s)": "remSleepDuration",
-    "Latency": "sleepLatency"
+    "Latency": "sleepLatency",
+    "Efficiency": "sleepEfficiency",
+    "Average HeartRate": "averageHR"
 }
 export const enum Provider {
     Oura = "Oura",
