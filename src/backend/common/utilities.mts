@@ -13,7 +13,13 @@ export function sleep(ms: number) {
       setTimeout(resolve, ms);
     });
   }
-
+export function getMonday( date: Date ) {
+    var tempDate = structuredClone(date)
+    var day = tempDate.getDay() || 7;  
+    if( day !== 1 ) 
+    tempDate.setHours(-24 * (day - 1)); 
+    return tempDate;
+}
   
 export const getDateOffset = (startDate: Date, offset: number) => {
     let tempDate = structuredClone(startDate)

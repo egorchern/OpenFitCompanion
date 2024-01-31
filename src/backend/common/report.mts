@@ -1,8 +1,10 @@
 import { getGoal } from "./db/goals/select.mjs";
 import { Goal, GoalType } from "./db/goals/types.mjs";
+import { queryHealthData } from "./db/healtData/query.mjs";
 import { selectHealthData } from "./db/healtData/select.mjs";
 import { HealthDataType } from "./db/healtData/types.mjs";
 import { ActivityData, Provider } from "./types.mjs";
+import { getMonday, toShortISODate } from "./utilities.mjs";
 const getScoreEmoji = (score: number) => {
     const scorePointsToEmoji: any = {
         30: "😡",
@@ -23,8 +25,8 @@ const getScoreEmoji = (score: number) => {
 }
 
 const intensityMETWeights = {
-    softActivity: 2.25,
-    moderateActivity: 4.5,
+    softActivity: 1.85,
+    moderateActivity: 3.25,
     intenseActivity: 7
 }
 
@@ -40,15 +42,41 @@ const getStepsString = async (activityToday: ActivityData) => {
     return stepsString
 }
 
-const getActivityString = async (activityToday: ActivityData) => {
+const getActivityString = async (curDate: string) => {
+    const startDate = getMonday(new Date(curDate))
+    const activitySinceMonday = (await queryHealthData(toShortISODate(startDate), curDate, HealthDataType.Activity, Provider.Unified)) as ActivityData[]
     const weeklyActivityGoal = (await getGoal(GoalType.WEEKLY_ACTIVITY)).Value
-    const ReferenceMETPerDay = Math.floor(weeklyActivityGoal / 7)
-    const activityMETMinutes =
-        ((activityToday.softActivity / 60)  * intensityMETWeights.softActivity) +
-        ((activityToday.moderateActivity / 60) * intensityMETWeights.moderateActivity) +
-        ((activityToday.intenseActivity / 60) * intensityMETWeights.intenseActivity)
-    const activityString = `
-    Activity: ${activityMETMinutes} / ${ReferenceMETPerDay}`
+    const activityDonePastWeek = activitySinceMonday.map((curElement) => {
+        const METDone = Math.floor(
+            ((curElement.softActivity / 60)  * intensityMETWeights.softActivity) +
+            ((curElement.moderateActivity / 60) * intensityMETWeights.moderateActivity) +
+            ((curElement.intenseActivity / 60) * intensityMETWeights.intenseActivity)
+        )
+        return METDone
+    })
+    const activityUntilToday = activityDonePastWeek.reduce((accum, curElem, idx) => {
+        if (idx === activityDonePastWeek.length - 1){
+            return accum
+        } 
+        return accum + curElem
+    })
+    
+    console.log(activityDonePastWeek)
+
+    const METToday = activityDonePastWeek[activityDonePastWeek.length - 1]
+    const remainingBeforeToday = weeklyActivityGoal - activityUntilToday
+    console.log(remainingBeforeToday)
+    const expectedRateBefore = Math.floor(remainingBeforeToday / (7 - activityDonePastWeek.length + 1))
+    const METRemaining = weeklyActivityGoal - activityUntilToday - METToday
+    const remainingDays = 7 - activityDonePastWeek.length
+    const averageInFuture = Math.floor(METRemaining / remainingDays)
+    const percentage = Math.floor((METToday / expectedRateBefore) * 100)
+    const todayFeedback = `${METToday} MET mins / ${expectedRateBefore} - ${percentage}% - ${getScoreEmoji(percentage)}`
+    const activityString = `${todayFeedback}
+Remaining activity for this week:  ${METRemaining} MET mins
+You should aim to do ${averageInFuture} MET mins per day to achieve the goal
+    `
+    
     return activityString
 }
 const generateRefreshReminder = async () => {
@@ -63,12 +91,12 @@ const getActivityBody = async () => {
         throw new Error("No activity data for today!")
     }
    
-    const reportBody = `
-    ${await getStepsString(activityToday)}
-    ${await getActivityString(activityToday)}
+    const reportBody = `🏃 Activity:
+${await getActivityString(curDate)}
     `
     return reportBody
 }
+
 export const generateDailyReport = async () => {
     const activityPortion = await getActivityBody()
     const reportBody = `
