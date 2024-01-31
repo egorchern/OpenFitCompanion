@@ -14,6 +14,13 @@ export function sleep(ms: number) {
     });
   }
 
+  
+export const getDateOffset = (startDate: Date, offset: number) => {
+    let tempDate = structuredClone(startDate)
+    tempDate.setDate(tempDate.getDate() + offset)
+    return tempDate
+}
+
 export function getRandomInt(min: number, max: number) {
     min = Math.ceil(min);
     max = Math.floor(max);

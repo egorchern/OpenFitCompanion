@@ -1,6 +1,6 @@
 export const enum GoalType {
     STEPS = 'steps',
-    ACTIVITY = 'activity',
+    WEEKLY_ACTIVITY = 'activity',
     SLEEP_DURATION = 'sleepDuration',
     SLEEP_DEPTH = 'sleepDepth'
 }

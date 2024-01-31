@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === "dev"){
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-export const getGoal = async (type: HealthDataType) => {
+export const getGoal = async (type: GoalType) => {
     const command = new GetCommand({
         TableName: config.tableName,
         Key: {
@@ -19,6 +19,6 @@ export const getGoal = async (type: HealthDataType) => {
         }
     })
     const response = await ddbDocClient.send(command)
-    console.log(response)
-    return response.Item as HealthData
+    
+    return response.Item as Goal
 }
