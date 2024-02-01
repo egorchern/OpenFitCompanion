@@ -95,31 +95,37 @@ export default function DataGraph(props: dataGraphProps) {
   };
   const queryClient = useQueryClient();
   const endDate = getDateOffset(startDate, interval)
-  console.log(`Graph: ${toShortISODate(startDate)}, ${toShortISODate(endDate)}`)
+  
   const {status, data, error, isFetching } = useData(toShortISODate(startDate), toShortISODate(endDate), type);
   const graphData = useMemo(() => {
     if (error || status !== "success" || !data){
       return {}
     }
     const refDate = new Date(data[0].data[0].Date)
+    const dateRange = Array.from(Array(interval).keys()).map((offset) => {
+      return toShortISODate(getDateOffset(refDate, offset))
+    })
+   
     return {
-      labels: data[0].data.map((v: any, offset: number) => {
-        return toShortISODate(getDateOffset(refDate, offset))
-      }),
+      
       datasets: data.map((value: any) => {
         return {
           data: value.data.map((datum: any) => {
-            return datum[propertyName]
+            return {
+              x: datum.Date,
+              y: datum[propertyName]
+            }
           }),
           label: value.provider,
           borderColor: providerToColor[value.provider],
-          backgroundColor: providerToColor[value.provider]
+          backgroundColor: providerToColor[value.provider],
+          spanGaps: false
         }
         
         
       })
     }
-  }, [data, status, error, propertyName])
+  }, [data, status, error, interval, propertyName])
   return (
     <div className='full-width'>
       {status === 'success' ? 
