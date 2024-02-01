@@ -9,7 +9,7 @@ const getScore = async (startDate: string, endDate: string) => {
         start_date: startDate,
         end_date: endDate,
     }).toString()
-    const response = await fetch(scoreUrl, {
+    const response = await fetch(queryUrl, {
         method: "GET",
         headers: new Headers({
             "Authorization": `Bearer ${accessToken}`
@@ -19,7 +19,8 @@ const getScore = async (startDate: string, endDate: string) => {
     if (!result?.data){
         throw new Error()
     }
-
+    console.log(`Sleep scores`)
+    console.log(result.data)
     return result.data
 }
 
@@ -40,7 +41,7 @@ export const getDailySleepSummary = async (startDate: string, endDate: string) =
     if (!result?.data){
         throw new Error()
     }
-    console.log(result.data)
+    // console.log(result.data)
     const scoresObj = await getScore(startDate, endDate)
     const dateToScoreMap = new Map()
     scoresObj.forEach((scoreObj: { score: any, day:string }) => {

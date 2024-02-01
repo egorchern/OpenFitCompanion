@@ -95,6 +95,7 @@ export default function DataGraph(props: dataGraphProps) {
   };
   const queryClient = useQueryClient();
   const endDate = getDateOffset(startDate, interval)
+  console.log(`Graph: ${toShortISODate(startDate)}, ${toShortISODate(endDate)}`)
   const {status, data, error, isFetching } = useData(toShortISODate(startDate), toShortISODate(endDate), type);
   const graphData = useMemo(() => {
     if (error || status !== "success" || !data){

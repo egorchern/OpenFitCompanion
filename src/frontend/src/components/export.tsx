@@ -1,7 +1,7 @@
 import { Link } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-const PERSONAL_SECRET = localStorage.getItem("PERSONAL_SECRET")
+const PERSONAL_SECRET = localStorage.getItem("API_SECRET")
 const baseApi = 'https://j36jvcdbxaumnmb7odfz64rjoa0ozyzj.lambda-url.us-east-1.on.aws'
 function useExport() {
     return useMutation({
