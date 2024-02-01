@@ -1,0 +1,34 @@
+Withings: 
+
+Activity:
+{
+    "provider": "Withings",
+    "userid": "36671686",
+    "appli": "16",
+    "date": "2024-01-30"
+}
+Sleep:
+{
+    "provider": "Withings",
+    "userid": "36671686",
+    "startdate": "1706582940",
+    "enddate": "1706615580",
+    "appli": "44"
+}
+
+
+Oura:
+
+Activity:
+{
+    "provider": "Oura",
+    "date": "2024-01-30T14:40:14.566000+00:00",
+    "data_type": "daily_activity"
+}
+
+Sleep: 
+{
+    "provider": "Oura",
+    "date": "2024-01-30T10:35:20.058000+00:00",
+    "data_type": "sleep"
+}
