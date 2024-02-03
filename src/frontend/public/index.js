@@ -1,10 +1,18 @@
-// Check if service workers are supported
-if ('serviceWorker' in navigator) {
+
+const main = async () => {
+  if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service_worker.js', {
       scope: '/',
     });
+    const PERSONAL_SECRET = localStorage.getItem("API_SECRET")
+    if (!PERSONAL_SECRET){
+      return
+    }
+    const registration = await navigator.serviceWorker.ready
+    registration.active.postMessage(PERSONAL_SECRET)
   }
-
+}
+main()
   // const subscribe = async () => {
   //   if (!('serviceWorker' in navigator)) return;
   

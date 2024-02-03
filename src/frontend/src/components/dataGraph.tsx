@@ -107,7 +107,7 @@ export default function DataGraph(props: dataGraphProps) {
     })
    
     return {
-      
+      labels: dateRange,
       datasets: data.map((value: any) => {
         return {
           data: value.data.map((datum: any) => {
@@ -119,7 +119,7 @@ export default function DataGraph(props: dataGraphProps) {
           label: value.provider,
           borderColor: providerToColor[value.provider],
           backgroundColor: providerToColor[value.provider],
-          spanGaps: false
+          spanGaps: true
         }
         
         

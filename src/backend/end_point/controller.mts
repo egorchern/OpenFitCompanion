@@ -1,9 +1,9 @@
-// import { exportHealthData } from "../common/export.mjs";
 import { queryHealthData } from "../common/db/healtData/query.mjs";
 import { selectHealthData } from "../common/db/healtData/select.mjs";
 import { HealthDataType } from "../common/db/healtData/types.mjs";
 import { HealthData, Provider } from "../common/types.mjs";
 import { insertPushSubscription } from "../common/db/pushSubscription/insert.mjs";
+import { exportHealthData } from "../common/export.mjs";
 
 const providers = [Provider.Oura, Provider.Withings, Provider.Unified]
 const getHealthDataInRange = async (startDate: string, endDate: string, type: HealthDataType) => {
@@ -38,16 +38,16 @@ export const handleRequest = async (method: string, path: string, event: any) =>
       }
       case ("POST"): {
         switch (path) {
-        //   case ("/export"): {
-        //     const downloadUrl = await exportHealthData()
+          case ("/export"): {
+            const downloadUrl = await exportHealthData()
   
-        //     return {
-        //       statusCode: 200,
-        //       body: JSON.stringify({
-        //         "URL": downloadUrl
-        //       })
-        //     }
-        //   }
+            return {
+              statusCode: 200,
+              body: JSON.stringify({
+                "URL": downloadUrl
+              })
+            }
+          }
           case ("/pushSubscription"): {
             const subscriptionJSON = event?.body
             if (!subscriptionJSON){
