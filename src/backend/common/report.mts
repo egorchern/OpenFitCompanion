@@ -3,7 +3,7 @@ import { Goal, GoalType } from "./db/goals/types.mjs";
 import { queryHealthData } from "./db/healtData/query.mjs";
 import { selectHealthData } from "./db/healtData/select.mjs";
 import { HealthDataType } from "./db/healtData/types.mjs";
-import { ActivityData, Provider } from "./types.mjs";
+import { ActivityData, Provider, SleepData } from "./types.mjs";
 import { getMonday, toShortISODate } from "./utilities.mjs";
 const getScoreEmoji = (score: number) => {
     const scorePointsToEmoji: any = {
@@ -42,17 +42,21 @@ const getStepsString = async (activityToday: ActivityData) => {
     return stepsString
 }
 
-const getActivityString = async (curDate: string) => {
+const calcActivity = (activityData: ActivityData) => {
+    const METDone = Math.floor(
+        ((activityData.softActivity / 60) * intensityMETWeights.softActivity) +
+        ((activityData.moderateActivity / 60) * intensityMETWeights.moderateActivity) +
+        ((activityData.intenseActivity / 60) * intensityMETWeights.intenseActivity)
+    )
+    return METDone
+}
+
+const getActivityVolumeString = async (curDate: string) => {
     const startDate = getMonday(new Date(curDate))
     const activitySinceMonday = (await queryHealthData(toShortISODate(startDate), curDate, HealthDataType.Activity, Provider.Unified)) as ActivityData[]
     const weeklyActivityGoal = (await getGoal(GoalType.WEEKLY_ACTIVITY)).Value
     const activityDonePastWeek = activitySinceMonday.map((curElement) => {
-        const METDone = Math.floor(
-            ((curElement.softActivity / 60) * intensityMETWeights.softActivity) +
-            ((curElement.moderateActivity / 60) * intensityMETWeights.moderateActivity) +
-            ((curElement.intenseActivity / 60) * intensityMETWeights.intenseActivity)
-        )
-        return METDone
+        return calcActivity(curElement)
     })
     const activityUntilToday = activityDonePastWeek.reduce((accum, curElem, idx) => {
         if (idx === activityDonePastWeek.length - 1) {
@@ -91,28 +95,60 @@ You should aim to do ${averageInFuture} MET mins per day to achieve the goal
     }
 
 }
-const generateRefreshReminder = async () => {
 
+const generateRefreshReminder = async () => {
+    const curDate = new Date().toISOString().slice(0, 10);
+    const activityToday = (await selectHealthData(curDate, HealthDataType.Activity, Provider.Unified, true)) as ActivityData;
+    const sleepToday = (await selectHealthData(curDate, HealthDataType.Sleep, Provider.Unified, true)) as SleepData;
+    return `Is this up-to-date? IF not resync the apps
+Light Activity minutes: ${Math.floor(activityToday?.softActivity / 60)}
+Moderate Activity minutes: ${Math.floor(activityToday?.moderateActivity / 60)}
+Intense Activity minutes: ${Math.floor(activityToday?.intenseActivity / 60)}
+Sleep Duration: ${sleepToday?.totalSleepDuration}`
 }
+
 const getActivityBody = async () => {
 
     // Fetch actual
     const curDate = new Date().toISOString().slice(0, 10);
     const activityToday = (await selectHealthData(curDate, HealthDataType.Activity, Provider.Unified, true)) as ActivityData;
     if (!activityToday) {
-        throw new Error("No activity data for today!")
+        return ""
     }
 
     const reportBody = `🏃 Activity:
-${await getActivityString(curDate)}
+${await getActivityVolumeString(curDate)}
     `
     return reportBody
 }
 
+const getSleepVolume = async (curDate: string) => {
+    const sleepToday = (await selectHealthData(curDate, HealthDataType.Sleep, Provider.Unified, true)) as SleepData;
+    const hoursSlept = Math.floor(sleepToday.totalSleepDuration / 60)
+    const minutesSlept = sleepToday.totalSleepDuration - (hoursSlept * 60)
+    return `${hoursSlept}H ${minutesSlept}M
+Score: ${sleepToday.sleepScore}`
+}
+
+const getSleepBody = async () => {
+        // Fetch actual
+        const curDate = new Date().toISOString().slice(0, 10);
+        const sleepToday = (await selectHealthData(curDate, HealthDataType.Sleep, Provider.Unified, true)) as SleepData;
+        if (!sleepToday) {
+            return ""
+        }
+    
+        const reportBody = `😴 Sleep:
+    ${await getSleepVolume(curDate)}
+        `
+        return reportBody
+}
 export const generateDailyReport = async () => {
     const activityPortion = await getActivityBody()
+    const sleepPortion = await getSleepBody()
     const reportBody = `
     ${activityPortion}
+    ${sleepPortion}
     `
     return {
         title: "Daily Health Report",
