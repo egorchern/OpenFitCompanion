@@ -25,9 +25,9 @@ const getScoreEmoji = (score: number) => {
 }
 
 const intensityMETWeights = {
-    softActivity: 1.85,
-    moderateActivity: 3.25,
-    intenseActivity: 7
+    softActivity: 1.75,
+    moderateActivity: 3,
+    intenseActivity: 5.5
 }
 
 const getStepsString = async (activityToday: ActivityData) => {
@@ -48,49 +48,61 @@ const getActivityString = async (curDate: string) => {
     const weeklyActivityGoal = (await getGoal(GoalType.WEEKLY_ACTIVITY)).Value
     const activityDonePastWeek = activitySinceMonday.map((curElement) => {
         const METDone = Math.floor(
-            ((curElement.softActivity / 60)  * intensityMETWeights.softActivity) +
+            ((curElement.softActivity / 60) * intensityMETWeights.softActivity) +
             ((curElement.moderateActivity / 60) * intensityMETWeights.moderateActivity) +
             ((curElement.intenseActivity / 60) * intensityMETWeights.intenseActivity)
         )
         return METDone
     })
     const activityUntilToday = activityDonePastWeek.reduce((accum, curElem, idx) => {
-        if (idx === activityDonePastWeek.length - 1){
+        if (idx === activityDonePastWeek.length - 1) {
             return accum
-        } 
+        }
         return accum + curElem
     })
-    
+
     console.log(activityDonePastWeek)
 
     const METToday = activityDonePastWeek[activityDonePastWeek.length - 1]
-    const remainingBeforeToday = weeklyActivityGoal - activityUntilToday
-    console.log(remainingBeforeToday)
-    const expectedRateBefore = Math.floor(remainingBeforeToday / (7 - activityDonePastWeek.length + 1))
+
     const METRemaining = weeklyActivityGoal - activityUntilToday - METToday
-    const remainingDays = 7 - activityDonePastWeek.length
-    const averageInFuture = Math.floor(METRemaining / remainingDays)
-    const percentage = Math.floor((METToday / expectedRateBefore) * 100)
-    const todayFeedback = `${METToday} MET mins / ${expectedRateBefore} - ${percentage}% - ${getScoreEmoji(percentage)}`
-    const activityString = `${todayFeedback}
+    if (METRemaining > 0) {
+        const remainingBeforeToday = weeklyActivityGoal - activityUntilToday
+        const expectedRateBefore = Math.floor(remainingBeforeToday / (7 - activityDonePastWeek.length + 1))
+
+        const remainingDays = 7 - activityDonePastWeek.length
+        const averageInFuture = Math.floor(METRemaining / remainingDays)
+        const percentage = Math.floor((METToday / expectedRateBefore) * 100)
+
+        const todayFeedback = `${METToday} MET mins / ${expectedRateBefore} - ${percentage}% - ${getScoreEmoji(percentage)}`
+        const activityString = `${todayFeedback}
 Remaining activity for this week:  ${METRemaining} MET mins
 You should aim to do ${averageInFuture} MET mins per day to achieve the goal
     `
-    
-    return activityString
+
+        return activityString
+    }
+    else {
+        const todayFeedback = `${METToday} MET mins - ${getScoreEmoji(100)}`
+        const activityString = `${todayFeedback}
++${activityUntilToday + METToday - weeklyActivityGoal} MET mins Over the goal`
+
+        return activityString
+    }
+
 }
 const generateRefreshReminder = async () => {
 
 }
 const getActivityBody = async () => {
-   
+
     // Fetch actual
     const curDate = new Date().toISOString().slice(0, 10);
     const activityToday = (await selectHealthData(curDate, HealthDataType.Activity, Provider.Unified, true)) as ActivityData;
     if (!activityToday) {
         throw new Error("No activity data for today!")
     }
-   
+
     const reportBody = `🏃 Activity:
 ${await getActivityString(curDate)}
     `

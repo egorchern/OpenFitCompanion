@@ -10,4 +10,4 @@ export const handler = async () => {
     await sendPushNotification(title, body, subscription)
 }
 
-await handler()
+// await handler()
