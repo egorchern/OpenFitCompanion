@@ -16,51 +16,50 @@ const urlBase64ToUint8Array = (base64String) => {
     }
     return outputArray;
 };
-const baseApi = 'https://j36jvcdbxaumnmb7odfz64rjoa0ozyzj.lambda-url.us-east-1.on.aws'
+const baseApi =
+    "https://j36jvcdbxaumnmb7odfz64rjoa0ozyzj.lambda-url.us-east-1.on.aws";
 const submitSubscription = async (subscription, API_SECRET) => {
     const response = await fetch(`${baseApi}/pushSubscription`, {
         body: JSON.stringify(subscription),
         headers: {
-            "authorization": `Bearer ${API_SECRET}`
-          },
-          method: "POST"
-    })
-    if (!response.ok){
-        console.log("err")
-        throw Error("bad token")
-      }
-    const result = await response.json()
-    console.log(result)
-}
+            authorization: `Bearer ${API_SECRET}`,
+        },
+        method: "POST",
+    });
+    if (!response.ok) {
+        console.log("err");
+        throw Error("bad token");
+    }
+    const result = await response.json();
+    console.log(result);
+};
 
-self.addEventListener("activate", async (event) => {
-    
-});
+self.addEventListener("activate", async (event) => {});
 
 const handleSubscription = async (API_SECRET) => {
-    const subscriptionExists = !!(await self.registration.pushManager.getSubscription())
-    if (subscriptionExists){
-        return
+    const subscriptionExists =
+        !!(await self.registration.pushManager.getSubscription());
+    if (subscriptionExists) {
+        return;
     }
     const subscription = await self.registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
     });
-    console.log(JSON.stringify(subscription))
-    submitSubscription(subscription, API_SECRET)
-}
+    console.log(JSON.stringify(subscription));
+    submitSubscription(subscription, API_SECRET);
+};
 
 addEventListener("message", (event) => {
     // event is an ExtendableMessageEvent object
-    const API_SECRET = event.data
-    handleSubscription(API_SECRET)
-
+    const API_SECRET = event.data;
+    handleSubscription(API_SECRET);
 });
 
 self.addEventListener("push", (e) => {
     const data = e.data.json();
     self.registration.showNotification(data.title, {
         body: data.body,
-        icon: data.icon,
+        icon: data.icon
     });
 });
