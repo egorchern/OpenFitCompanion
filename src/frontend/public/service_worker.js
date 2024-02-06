@@ -34,32 +34,46 @@ const submitSubscription = async (subscription, API_SECRET) => {
     console.log(result);
 };
 
-self.addEventListener("activate", async (event) => {});
+self.addEventListener("activate", async (event) => {
+});
 
 const handleSubscription = async (API_SECRET) => {
-    const subscriptionExists =
-        !!(await self.registration.pushManager.getSubscription());
-    if (subscriptionExists) {
-        return;
+    const existingSubscription =
+        (await self.registration.pushManager.getSubscription());
+    if (!!existingSubscription) {
+        
+        return existingSubscription
     }
     const subscription = await self.registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
     });
-    console.log(JSON.stringify(subscription));
     submitSubscription(subscription, API_SECRET);
+    return subscription
 };
 
-addEventListener("message", (event) => {
+addEventListener("message", async (event) => {
     // event is an ExtendableMessageEvent object
     const API_SECRET = event.data;
-    handleSubscription(API_SECRET);
+    const subscription = await handleSubscription(API_SECRET);
+    event.source.postMessage(JSON.stringify(subscription))
 });
 
 self.addEventListener("push", (e) => {
     const data = e.data.json();
+    console.log(data)
+    const url = data.url
     self.registration.showNotification(data.title, {
         body: data.body,
-        icon: data.icon
+        icon: data.icon,
+        data: {
+            url: url
+        }
     });
 });
+
+self.addEventListener('notificationclick', (ev) => {
+    console.log(ev)
+    const url = ev?.notification?.data?.url
+    console.log(url)
+})

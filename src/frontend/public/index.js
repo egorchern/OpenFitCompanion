@@ -1,7 +1,11 @@
 
 const main = async () => {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service_worker.js', {
+    const notificationPermission = await Notification.requestPermission()
+    if (!notificationPermission || notificationPermission !== "granted"){
+      return
+    }
+    await navigator.serviceWorker.register('/service_worker.js', {
       scope: '/',
     });
     const PERSONAL_SECRET = localStorage.getItem("API_SECRET")
@@ -9,6 +13,10 @@ const main = async () => {
       return
     }
     const registration = await navigator.serviceWorker.ready
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      // event is a MessageEvent object
+      document.getElementById("alerting").innerText += event.data
+    });
     registration.active.postMessage(PERSONAL_SECRET)
   }
 }
