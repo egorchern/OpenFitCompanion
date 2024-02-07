@@ -19,6 +19,7 @@ import {
 import { dataGraphProps, apiData, HealthDataType, Provider } from './types';
 import { off } from 'process';
 import { getDateOffset, toShortISODate } from './utilities';
+import { QueryHealthData } from '../hooks/queryHealthData';
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,31 +31,8 @@ ChartJS.register(
 );
 
 
-const PERSONAL_SECRET = localStorage.getItem("API_SECRET")
-function useData(startDate: string, endDate: string, type: HealthDataType){
-  return useQuery(`${type}`, async () => {
-    const url = new URL(`${baseApi}/${type}`)
-    url.searchParams.set("startdate", startDate)
-    url.searchParams.set("enddate", endDate)
-    const response = await fetch(url, {
-      headers: {
-        "authorization": `Bearer ${PERSONAL_SECRET}`
-      },
-      method: "GET"
-    })
-    if (!response.ok){
-      console.log("err")
-      throw Error("bad token")
-    }
-    const result = await response.json()
-    console.log(result)
-    return result
-  }, {
-    staleTime: 60000,
-    retry: 0
-  })
-}
-const baseApi = 'https://j36jvcdbxaumnmb7odfz64rjoa0ozyzj.lambda-url.us-east-1.on.aws'
+
+
 const providerToColor: any = {}
 providerToColor[Provider.Oura] = "rgb(255, 99, 132)"
 providerToColor[Provider.Withings] = "rgb(53, 162, 235)"
@@ -96,7 +74,7 @@ export default function DataGraph(props: dataGraphProps) {
   const queryClient = useQueryClient();
   const endDate = getDateOffset(startDate, interval)
   
-  const {status, data, error, isFetching } = useData(toShortISODate(startDate), toShortISODate(endDate), type);
+  const {status, data, error, isFetching } = QueryHealthData(toShortISODate(startDate), toShortISODate(endDate), type);
   const graphData = useMemo(() => {
     if (error || status !== "success" || !data){
       return {}

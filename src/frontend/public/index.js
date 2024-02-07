@@ -13,10 +13,6 @@ const main = async () => {
       return
     }
     const registration = await navigator.serviceWorker.ready
-    navigator.serviceWorker.addEventListener("message", (event) => {
-      // event is a MessageEvent object
-      document.getElementById("alerting").innerText += event.data
-    });
     registration.active.postMessage(PERSONAL_SECRET)
   }
 }

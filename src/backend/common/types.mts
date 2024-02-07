@@ -26,7 +26,8 @@ export interface SleepData extends BaseHealthData{
 }
 export const enum ReportType {
     WEEKLY = "weekly",
-    DAILY = "daily"
+    DAILY = "daily",
+    REFRESH_REMINDER = "reminder"
 }
 export const enum Provider {
     Oura = "Oura",

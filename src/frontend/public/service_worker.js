@@ -48,7 +48,7 @@ const handleSubscription = async (API_SECRET) => {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
     });
-    submitSubscription(subscription, API_SECRET);
+    // submitSubscription(subscription, API_SECRET);
     return subscription
 };
 
@@ -56,7 +56,7 @@ addEventListener("message", async (event) => {
     // event is an ExtendableMessageEvent object
     const API_SECRET = event.data;
     const subscription = await handleSubscription(API_SECRET);
-    event.source.postMessage(JSON.stringify(subscription))
+    console.log(JSON.stringify(subscription))
 });
 
 self.addEventListener("push", (e) => {
@@ -72,8 +72,25 @@ self.addEventListener("push", (e) => {
     });
 });
 
-self.addEventListener('notificationclick', (ev) => {
-    console.log(ev)
+// Notification click event listener
+self.addEventListener("notificationclick", (ev) => {
+    // Close the notification popout
+    ev.notification.close();
     const url = ev?.notification?.data?.url
-    console.log(url)
-})
+    // Get all the Window clients
+    ev.waitUntil(
+      clients.matchAll({ type: "window" }).then((clientsArr) => {
+        // If a Window tab matching the targeted URL already exists, focus that;
+        const hadWindowToFocus = clientsArr.some((windowClient) =>
+          windowClient.url === url
+            ? (windowClient.focus(), true)
+            : false,
+        );
+        // Otherwise, open a new tab to the applicable URL and focus it.
+        if (!hadWindowToFocus)
+          clients
+            .openWindow(url)
+            .then((windowClient) => (windowClient ? windowClient.focus() : null));
+      }),
+    );
+  });

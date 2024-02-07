@@ -8,3 +8,11 @@ export const getDateOffset = (startDate: Date, offset: number) => {
     tempDate.setDate(tempDate.getDate() + offset)
     return tempDate
 }
+export function getMonday( date: Date ) {
+    var tempDate = structuredClone(date)
+    var day = tempDate.getDay() || 7;  
+    if( day !== 1 ) 
+    tempDate.setHours(-24 * (day - 1)); 
+    return tempDate;
+}
+  

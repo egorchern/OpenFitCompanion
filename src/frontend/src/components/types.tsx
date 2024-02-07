@@ -8,6 +8,18 @@ export interface dataGraphProps{
     interval: number,
     propertyName: string
 }
+
+export const enum GoalType {
+    STEPS = 'steps',
+    WEEKLY_ACTIVITY = 'activity',
+    SLEEP_DURATION = 'sleepDuration',
+    SLEEP_DEPTH = 'sleepDepth'
+}
+
+export interface Goal{
+    Type: GoalType,
+    Value: number
+}
 export interface apiData{
     provider: Provider,
     data: HealthData[]

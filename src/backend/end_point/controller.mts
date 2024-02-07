@@ -4,6 +4,8 @@ import { HealthDataType } from "../common/db/healtData/types.mjs";
 import { HealthData, Provider } from "../common/types.mjs";
 import { insertPushSubscription } from "../common/db/pushSubscription/insert.mjs";
 import { exportHealthData } from "../common/export.mjs";
+import { getGoal } from "common/db/goals/select.mjs";
+import { GoalType } from "common/db/goals/types.mjs";
 
 const providers = [Provider.Oura, Provider.Withings, Provider.Unified]
 const getHealthDataInRange = async (startDate: string, endDate: string, type: HealthDataType) => {
@@ -28,7 +30,14 @@ export const handleRequest = async (method: string, path: string, event: any) =>
               body: JSON.stringify(data)
             }
           }
-  
+          case ("/goals"): {
+            const goalType = event?.queryStringParameters?.goalType as GoalType
+            const data = await getGoal(goalType)
+            return {
+              statusCode: 200,
+              body: JSON.stringify(data)
+            }
+          }
           default: {
             return {
               statusCode: 400
