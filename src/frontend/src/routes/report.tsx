@@ -1,9 +1,11 @@
 import { Form, useLoaderData } from "react-router-dom";
-import { getMonday, toShortISODate } from "../components/utilities";
+import { getDateDiffInDays, getMonday, toShortISODate } from "../components/utilities";
 import { QueryHealthData } from "../hooks/queryHealthData";
 import { ActivityData, GoalType, HealthDataType, Provider } from "../components/types";
 import { GetGoal } from "../hooks/getGoal";
 import { useEffect, useMemo } from "react";
+import DataGraph from "../components/dataGraph";
+import { act } from "react-dom/test-utils";
 
 const intensityMETWeights = {
     softActivity: 1.75,
@@ -41,7 +43,7 @@ const getScoreEmoji = (score: number) => {
 
 
 const getActivityVolumeString = (curDate: string, activitySinceMonday: ActivityData[], weeklyActivityGoal: number) => {
-    
+
     const activityDonePastWeek = activitySinceMonday.map((curElement) => {
         return calcActivity(curElement)
     })
@@ -65,7 +67,7 @@ const getActivityVolumeString = (curDate: string, activitySinceMonday: ActivityD
         const averageInFuture = Math.floor(METRemaining / remainingDays)
         const percentage = Math.floor((METToday / expectedRateBefore) * 100)
 
-        const todayFeedback = `${METToday} MET mins / ${expectedRateBefore} - ${percentage}% - ${getScoreEmoji(percentage)}`
+        const todayFeedback = `${METToday}/${expectedRateBefore} MET Minutes - ${percentage}% - ${getScoreEmoji(percentage)}`
         let activityString = `${todayFeedback}
 Remaining activity for this week:  ${METRemaining} MET mins
 You should aim to do ${averageInFuture} MET mins per day to achieve the goal`
@@ -84,10 +86,10 @@ You should aim to do ${averageInFuture} MET mins per day to achieve the goal`
 const getActivityBody = (curDate: string, activitySinceMonday: ActivityData[], weeklyActivityGoal: number) => {
 
     // Fetch actual
-    
-    
+
+
     const startDate = getMonday(new Date(curDate))
-   
+
     const activityToday = activitySinceMonday[activitySinceMonday.length - 1]
 
     const reportBody = `🏃 Activity: ${getActivityVolumeString(curDate, activitySinceMonday, weeklyActivityGoal)}
@@ -99,18 +101,55 @@ function Report() {
     const curDate = useLoaderData() as any;
     const startDate = getMonday(new Date(curDate))
     let activitySinceMonday = (QueryHealthData(toShortISODate(startDate), curDate, HealthDataType.Activity)).data as any[]
-    
-    const weeklyActivityGoal = GetGoal(GoalType.WEEKLY_ACTIVITY)?.data
+
+    const weeklyActivityGoal = GetGoal(GoalType.WEEKLY_ACTIVITY)?.data?.Value
     const activityString = useMemo(() => {
-        if (!activitySinceMonday || !weeklyActivityGoal){
+        if (!activitySinceMonday || !weeklyActivityGoal) {
             return ""
         }
         return getActivityBody(curDate, activitySinceMonday[activitySinceMonday.length - 1].data, weeklyActivityGoal)
     }, [curDate, activitySinceMonday, weeklyActivityGoal])
+    const METActivitySinceMonday = useMemo(() => {
+        if (!activitySinceMonday) {
+            return undefined
+        }
+        const unifiedData = activitySinceMonday[activitySinceMonday.length - 1].data
+        const METUpToArr: number[] = []
+        let accum = 0;
+        for(const cur of unifiedData){
+            accum += calcActivity(cur)
+            METUpToArr.push(accum)
+        }
+        return [{
+            data: unifiedData.map((element: ActivityData, index: number) => {
+                return {
+                    METMinutes: METUpToArr[index],
+                    Date: element.date
+                }
+            }),
+            provider: "MET minutes"
+        }, {
+            data: unifiedData.map((element: ActivityData) => {
+                return {
+                    METMinutes: weeklyActivityGoal,
+                    Date: element.date
+                }
+            }),
+            provider: "Goal"
+        }]
+    }, [activitySinceMonday, weeklyActivityGoal])
+    console.log(METActivitySinceMonday)
     return (
         <div className="flex-vertical">
             <h2>Activity:</h2>
-            <p>{activityString}</p>
+            <DataGraph
+                type={HealthDataType.Activity}
+                startDate={startDate}
+                data={METActivitySinceMonday}
+                interval={getDateDiffInDays(startDate, new Date(curDate))}
+                propertyName={"METMinutes"}
+            />
+            <pre>{activityString}</pre>
         </div>
     )
 }

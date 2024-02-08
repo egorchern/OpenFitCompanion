@@ -4,7 +4,7 @@ import { GoalType, HealthData, HealthDataType } from "../components/types"
 const PERSONAL_SECRET = localStorage.getItem("API_SECRET")
 const baseApi = 'https://j36jvcdbxaumnmb7odfz64rjoa0ozyzj.lambda-url.us-east-1.on.aws'
 export function GetGoal(goalType: GoalType){
-  return useQuery(`${goalType}`, async () => {
+  return useQuery(`goal_${goalType}`, async () => {
     const url = `${baseApi}/goals?goalType=${goalType}`
     const response = await fetch(url, {
       headers: {

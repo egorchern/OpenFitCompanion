@@ -2,8 +2,9 @@ import React, { useMemo, useState } from 'react';
 import DataGraph from './dataGraph';
 import { ActivityData, HealthDataType, SleepData, readableActivityData, readableSleepData } from './types';
 
-import { getDateOffset } from './utilities';
+import { getDateOffset, toShortISODate } from './utilities';
 import Button from '@mui/material/Button';
+import { QueryHealthData } from '../hooks/queryHealthData';
 const PAST_DAYS_N = 7
 export default function DataVisualiser() {
     const [curPropertyName, setCurPropertyName] = useState("");
@@ -33,11 +34,15 @@ export default function DataVisualiser() {
             }
         }
     }
+    const startDate = getDateOffset(new Date(), -PAST_DAYS_N)
+    const endDate = getDateOffset(startDate, PAST_DAYS_N)
+    const {data} = QueryHealthData(toShortISODate(startDate), toShortISODate(endDate), curDataType)
     return (
         <div className='flex-vertical'>
 
             <DataGraph
                 type={curDataType}
+                data={data}
                 startDate={getDateOffset(new Date(), -PAST_DAYS_N)}
                 interval={PAST_DAYS_N}
                 propertyName={curPropertyName}

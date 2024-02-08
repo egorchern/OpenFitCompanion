@@ -6,7 +6,8 @@ export interface dataGraphProps{
     type: HealthDataType,
     startDate: Date,
     interval: number,
-    propertyName: string
+    propertyName: string,
+    data: any[] | undefined
 }
 
 export const enum GoalType {

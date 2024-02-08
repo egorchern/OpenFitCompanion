@@ -37,10 +37,11 @@ const providerToColor: any = {}
 providerToColor[Provider.Oura] = "rgb(255, 99, 132)"
 providerToColor[Provider.Withings] = "rgb(53, 162, 235)"
 providerToColor[Provider.Unified] = "rgb(20, 225, 129)"
-
+providerToColor["MET minutes"] =  "rgb(55, 162, 235)"
+providerToColor.Goal =  "rgb(20, 225, 129)"
 export default function DataGraph(props: dataGraphProps) {
   
-  const {type, startDate, interval, propertyName} = props
+  const {type, data, interval, startDate, propertyName} = props
   
   const options = {
     responsive: true,
@@ -71,17 +72,14 @@ export default function DataGraph(props: dataGraphProps) {
       }
     }
   };
-  const queryClient = useQueryClient();
-  const endDate = getDateOffset(startDate, interval)
-  
-  const {status, data, error, isFetching } = QueryHealthData(toShortISODate(startDate), toShortISODate(endDate), type);
+
+
   const graphData = useMemo(() => {
-    if (error || status !== "success" || !data){
+    if (!data){
       return {}
     }
-    const refDate = new Date(data[0].data[0].Date)
     const dateRange = Array.from(Array(interval).keys()).map((offset) => {
-      return toShortISODate(getDateOffset(refDate, offset))
+      return toShortISODate(getDateOffset(startDate, offset))
     })
    
     return {
@@ -103,10 +101,10 @@ export default function DataGraph(props: dataGraphProps) {
         
       })
     }
-  }, [data, status, error, interval, propertyName])
+  }, [data, interval, startDate, propertyName])
   return (
     <div className='full-width'>
-      {status === 'success' ? 
+      {!!data ? 
         (
           <Line
             options={options}
@@ -114,13 +112,7 @@ export default function DataGraph(props: dataGraphProps) {
           />
         ) : null
       }
-      {
-        error ? (
-          <span>
-            {String(error)}
-          </span>
-        ) : null
-      }
+      
       
     </div>
   )
