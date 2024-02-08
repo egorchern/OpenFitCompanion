@@ -37,7 +37,7 @@ const providerToColor: any = {}
 providerToColor[Provider.Oura] = "rgb(255, 99, 132)"
 providerToColor[Provider.Withings] = "rgb(53, 162, 235)"
 providerToColor[Provider.Unified] = "rgb(20, 225, 129)"
-providerToColor["MET minutes"] =  "rgb(55, 162, 235)"
+providerToColor["Current"] =  "rgb(55, 162, 235)"
 providerToColor.Goal =  "rgb(20, 225, 129)"
 export default function DataGraph(props: dataGraphProps) {
   
@@ -45,6 +45,7 @@ export default function DataGraph(props: dataGraphProps) {
   
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as const,
@@ -56,7 +57,7 @@ export default function DataGraph(props: dataGraphProps) {
     },
     scales: {
       y: {
-        min: 0,
+        // min: 0,
         title: {
           display: true,
           text: propertyName,
@@ -103,7 +104,7 @@ export default function DataGraph(props: dataGraphProps) {
     }
   }, [data, interval, startDate, propertyName])
   return (
-    <div className='full-width'>
+    <div className='graph full-width'>
       {!!data ? 
         (
           <Line

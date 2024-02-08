@@ -48,7 +48,7 @@ const handleSubscription = async (API_SECRET) => {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
     });
-    // submitSubscription(subscription, API_SECRET);
+    submitSubscription(subscription, API_SECRET);
     return subscription
 };
 

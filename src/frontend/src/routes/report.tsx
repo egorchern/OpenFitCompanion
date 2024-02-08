@@ -127,7 +127,7 @@ function Report() {
                     Date: element.date
                 }
             }),
-            provider: "MET minutes"
+            provider: "Current"
         }, {
             data: unifiedData.map((element: ActivityData) => {
                 return {
