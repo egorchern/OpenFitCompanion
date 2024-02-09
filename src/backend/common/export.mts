@@ -37,4 +37,3 @@ export const exportHealthData = async () => {
     return getDownloadURL(csv, filename)
 }
 
-console.log(await exportHealthData())
