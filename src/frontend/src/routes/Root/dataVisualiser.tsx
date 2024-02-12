@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import DataGraph from './dataGraph';
-import { ActivityData, HealthDataType, SleepData, readableActivityData, readableSleepData } from './types';
+import DataGraph from '../../components/dataGraph';
+import { ActivityData, HealthDataType, SleepData, readableActivityData, readableSleepData } from '../../components/types';
 
-import { getDateOffset, toShortISODate } from './utilities';
+import { getDateOffset, toShortISODate } from '../../components/utilities';
 import Button from '@mui/material/Button';
-import { QueryHealthData } from '../hooks/queryHealthData';
+import { QueryHealthData } from '../../hooks/queryHealthData';
 const PAST_DAYS_N = 7
 export default function DataVisualiser() {
     const [curPropertyName, setCurPropertyName] = useState("");

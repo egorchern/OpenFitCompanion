@@ -18,7 +18,7 @@ body {
 }
 .graph{
     max-width: 62em;
-    min-height: 20em;
+    min-height: 35em;
 }
 .flex-horizontal {
     display: flex;
@@ -30,4 +30,7 @@ body {
 }
 * {
     font-family: 'Roboto';
+}
+a {
+    all: unset
 }

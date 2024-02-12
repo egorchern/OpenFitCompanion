@@ -1,9 +1,8 @@
 
   import '@fontsource/roboto'
-  import DataVisualiser from '../components/dataVisualiser';
-  import Export from "../components/export";
-  import SecretTokenSetter from "../components/SecretTokenSetter";
-  import { Route, Routes } from "react-router-dom";
+  import DataVisualiser from './Root/dataVisualiser';
+  import Export from "./Root/export";
+  import SecretTokenSetter from "./Root/SecretTokenSetter";
   
 
   
@@ -12,6 +11,7 @@
   
 
         <main className="flex-vertical">
+          <h1>Dashboard</h1>
           <SecretTokenSetter/>
           <DataVisualiser />
           <Export/>

@@ -5,7 +5,7 @@ import { sendPushNotification } from "../common/webpush.mjs"
 import { GoalType } from "../common/db/goals/types.mjs"
 import { toShortISODate } from "../common/utilities.mjs"
 import { ReportType } from "../common/types.mjs"
-const baseUrl = 'http://localhost:3000'
+const baseUrl = 'https://openfitcompanion.xyz'
 export const handler = async (ev: any) => {
     const type = ev.ReportType
     switch (type){
@@ -28,4 +28,3 @@ export const handler = async (ev: any) => {
     
 }
 
-await handler({ReportType: ReportType.DAILY})

@@ -1,41 +1,54 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import './App.css';
-import { BrowserRouter, RouterProvider, createBrowserRouter } from "react-router-dom";
-import Root from './routes/root';
-import Report from './routes/report';
+import { BrowserRouter, Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import {
   QueryClient,
   QueryClientProvider,
 } from "react-query";
+import DailyReport from './routes/DailyReport';
+import Root from './routes/Root';
+import Profile from './routes/Profile';
+import Navigation from './components/Navigation';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Root />,
+    element: <App />,
+    children: [
+      {
+        path: "/profile",
+        element: <Profile/>
+      },
+      {
+        path: "*",
+        element: <Root />
+      },
+      {
+        path: "dailyReport/:date",
+        element: <DailyReport />,
+        loader: (params: any) => {
+          return params.params.date
+        }
+      }
+    ]
   },
-  {
-    path: "*",
-    element: <Root />
-  },
-  {
-    path: "dailyReport/:date",
-    element: <Report />,
-    loader: (params: any) => {
-      return params.params.date
-    }
-  }
+  
 ]);
+function App() {
+  return (
+    <><Navigation /><Outlet /></>
+  )
+}
 const queryClient = new QueryClient();
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      
+      <RouterProvider router={router}/>
     </QueryClientProvider>
 
 

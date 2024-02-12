@@ -1,10 +1,10 @@
 import { Form, useLoaderData } from "react-router-dom";
-import { getDateDiffInDays, getMonday, toShortISODate } from "../components/utilities";
-import { QueryHealthData } from "../hooks/queryHealthData";
-import { ActivityData, GoalType, HealthDataType, Provider } from "../components/types";
-import { GetGoal } from "../hooks/getGoal";
+import { getDateDiffInDays, getMonday, toShortISODate } from "../../components/utilities";
+import { QueryHealthData } from "../../hooks/queryHealthData";
+import { ActivityData, GoalType, HealthDataType, Provider } from "../../components/types";
+import { GetGoal } from "../../hooks/getGoal";
 import { useEffect, useMemo } from "react";
-import DataGraph from "../components/dataGraph";
+import DataGraph from "../../components/dataGraph";
 import { act } from "react-dom/test-utils";
 
 const intensityMETWeights = {
@@ -96,18 +96,21 @@ const getActivityBody = (curDate: string, activitySinceMonday: ActivityData[], w
     `
     return reportBody
 }
+interface DailyActivityProps {
+    curDate: Date,
+    startDate: Date
+}
 
-function Report() {
-    const curDate = useLoaderData() as any;
-    const startDate = getMonday(new Date(curDate))
-    let activitySinceMonday = (QueryHealthData(toShortISODate(startDate), curDate, HealthDataType.Activity)).data as any[]
+function DailyActivity(props: DailyActivityProps) {
+    const { curDate, startDate } = props
+    let activitySinceMonday = (QueryHealthData(toShortISODate(startDate), toShortISODate(curDate), HealthDataType.Activity)).data as any[]
 
     const weeklyActivityGoal = GetGoal(GoalType.WEEKLY_ACTIVITY)?.data?.Value
     const activityString = useMemo(() => {
         if (!activitySinceMonday || !weeklyActivityGoal) {
             return ""
         }
-        return getActivityBody(curDate, activitySinceMonday[activitySinceMonday.length - 1].data, weeklyActivityGoal)
+        return getActivityBody(toShortISODate(curDate), activitySinceMonday[activitySinceMonday.length - 1].data, weeklyActivityGoal)
     }, [curDate, activitySinceMonday, weeklyActivityGoal])
     const METActivitySinceMonday = useMemo(() => {
         if (!activitySinceMonday) {
@@ -116,7 +119,7 @@ function Report() {
         const unifiedData = activitySinceMonday[activitySinceMonday.length - 1].data
         const METUpToArr: number[] = []
         let accum = 0;
-        for(const cur of unifiedData){
+        for (const cur of unifiedData) {
             accum += calcActivity(cur)
             METUpToArr.push(accum)
         }
@@ -140,17 +143,16 @@ function Report() {
     }, [activitySinceMonday, weeklyActivityGoal])
     console.log(METActivitySinceMonday)
     return (
-        <div className="flex-vertical">
-            <h2>Activity:</h2>
+
+        <>
             <DataGraph
                 type={HealthDataType.Activity}
                 startDate={startDate}
                 data={METActivitySinceMonday}
                 interval={getDateDiffInDays(startDate, new Date(curDate))}
-                propertyName={"METMinutes"}
-            />
-            <pre>{activityString}</pre>
-        </div>
+                propertyName={"METMinutes"} /><pre>{activityString}</pre>
+        </>
+
     )
 }
-export default Report;
+export default DailyActivity;
