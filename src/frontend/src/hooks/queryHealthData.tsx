@@ -19,7 +19,7 @@ export function QueryHealthData(startDate: string, endDate: string, type: Health
       throw Error("bad token")
     }
     const result = await response.json()
-    console.log(result)
+    console.log(JSON.stringify(result[2]))
     return result as any[]
   }, {
     staleTime: 60000,

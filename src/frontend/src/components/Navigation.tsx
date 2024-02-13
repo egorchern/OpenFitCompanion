@@ -55,8 +55,8 @@ function Navigation() {
                     const Icon = pageIconsMap[text]
                     const path = pagePathMap[text]
                     return (
-                        <Link to={path}>
-                            <ListItem key={text} disablePadding>
+                        <Link to={path} key={text}>
+                            <ListItem  disablePadding>
                                 <ListItemButton>
                                     <ListItemIcon>
                                         <Icon />
