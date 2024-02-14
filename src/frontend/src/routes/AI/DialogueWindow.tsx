@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react"
 import { GetThread } from "../../hooks/AI"
 import Message from "./Message"
 import { Card, Divider } from "@mui/material"
+import Control from "./Control"
 
 export default function DialogueWindow() {
     const { data, status } = GetThread(1)
@@ -28,22 +29,17 @@ export default function DialogueWindow() {
     }, [data]);
     console.log(data)
     return (
-        <div className="chatWindow">
-            {
-                messages ? (
-                    messages.map((message: any, index: number) => {
-                        return (
-                            <Card variant='outlined' key={index} sx={{
-                                p: 2,
-                                m: 2
-                            }}>
-                                <Message {...message} />
-                            </Card>
-                        )
-                    })
-                ) : null
-            }
+        <><div className="chatWindow">
+            {messages ? (
+                messages.map((message: any, index: number) => {
+                    return (
+
+                        <Message key={index} {...message} />
+
+                    )
+                })
+            ) : null}
             <div ref={messagesEndRef} />
-        </div>
+        </div><Control /></>
     )
 }

@@ -30,6 +30,8 @@ body {
 }
 * {
     font-family: 'Roboto';
+    text-wrap: balance;
+    word-wrap: break-word;
 }
 a {
     all: unset
@@ -48,4 +50,20 @@ a {
     overflow-y: auto;
     max-height: 80vh;
     max-width: 60em;
+}
+.userMessage {
+    background-color: hsl(247.66deg 60.69% 46.16% / 97%) !important;
+    color: white !important
+}
+.assistantMessage {
+    
+}
+.small-gap{
+    gap: 1em
+}
+.position-relative{
+    position: relative
+}
+main{
+    margin: 2em;
 }

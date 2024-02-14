@@ -45,12 +45,8 @@ export const sendProfile = async () => {
         }
     );
 }
-export const createActivityPlan = async (curDate: Date) => {
-    const monday = getMonday(curDate)
-    const data = await queryHealthData(toShortISODate(monday), toShortISODate(curDate), HealthDataType.Activity, Provider.Unified)
-    const prompt = `using this week's activity data, create physical activity plan for ${toShortISODate(curDate)}
-activity data: """${JSON.stringify(data)}""". just provide activities and their description. Make sure the plan provides balanced activity for the week
-make sure that the plan provides enough activity to hit my MET weekly target as per profile`
+
+export const executePrompt = async (prompt: string) => {
     const message = await openai.beta.threads.messages.create(
         threadID,
         {
@@ -73,6 +69,15 @@ make sure that the plan provides enough activity to hit my MET weekly target as 
             run.id
           );
     }
+}
+
+export const createActivityPlan = async (curDate: Date) => {
+    const monday = getMonday(curDate)
+    const data = await queryHealthData(toShortISODate(monday), toShortISODate(curDate), HealthDataType.Activity, Provider.Unified)
+    const prompt = `using this week's activity data, create physical activity plan for ${toShortISODate(curDate)}
+activity data: """${JSON.stringify(data)}""". just provide activities and their description. Make sure the plan provides balanced activity for the week
+make sure that the plan provides enough activity to hit my MET weekly target as per profile`
+    await executePrompt(prompt)
     
 }
 // const thread = await openai.beta.threads.create(

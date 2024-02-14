@@ -24,21 +24,21 @@ export function GetThread(userID: number){
   })
 }
 
-// export function MutateProfile() {
-//     return useMutation({
-//         mutationKey: "profile",
-//         mutationFn: async (profileData) => {
-//             const url = new URL(`${baseApi}/profile`)
-//             const response = await fetch(url, {
-//                 headers: {
-//                     "authorization": `Bearer ${PERSONAL_SECRET}`
-//                 },
-//                 body: JSON.stringify(profileData),
-//                 method: "POST"
-//             })
-//             const result = await response.json()
-//             console.log(result)
-//             return result
-//         }
-//     })
-// }
+export function ExecutePrompt() {
+    return useMutation({
+        mutationKey: "prompt",
+        mutationFn: async (prompt) => {
+            const url = new URL(`${baseApi}/prompt`)
+            const response = await fetch(url, {
+                headers: {
+                    "authorization": `Bearer ${PERSONAL_SECRET}`
+                },
+                body: JSON.stringify(prompt),
+                method: "POST"
+            })
+            const result = await response.json()
+            console.log(result)
+            return result
+        }
+    })
+}

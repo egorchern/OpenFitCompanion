@@ -9,7 +9,7 @@ import { GoalType } from "../common/db/goals/types.mjs";
 import { selectUserData } from "../common/db/userData/select.mjs";
 import { UserDataType } from "../common/db/userData/types.mjs";
 import { insertUserData } from "../common/db/userData/insert.mjs";
-import { getThreadMessages } from "../common/assistant.mjs";
+import { executePrompt, getThreadMessages } from "../common/assistant.mjs";
 
 const providers = [Provider.Oura, Provider.Withings, Provider.Unified]
 const getHealthDataInRange = async (startDate: string, endDate: string, type: HealthDataType) => {
@@ -97,6 +97,13 @@ export const handleRequest = async (method: string, path: string, event: any) =>
           }
           const profileObj = JSON.parse(profileJSON)
           await insertUserData(profileObj, UserDataType.Profile)
+          return {
+            statusCode: 200
+          }
+        }
+        case ("/prompt"): {
+          const prompt = event?.body
+          await executePrompt(prompt)
           return {
             statusCode: 200
           }
