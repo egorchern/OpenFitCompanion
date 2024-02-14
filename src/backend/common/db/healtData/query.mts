@@ -5,7 +5,8 @@ import { HealthDataType } from "./types.mjs";
 import { HealthData, Provider } from "../../types.mjs";
 const dbConfig: DynamoDBClientConfig = {}
 if (process.env.NODE_ENV === "dev") {
-    dbConfig.endpoint = config.LocalDbEndpoint
+    // dbConfig.endpoint = config.LocalDbEndpoint
+    dbConfig.region = config.region
 }
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);

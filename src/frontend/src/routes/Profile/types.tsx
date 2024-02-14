@@ -1,3 +1,10 @@
+
 export interface IFormInputs {
-    age?: number
+    age?: number,
+    height?: number,
+    weight?:number,
+    excludeActivitiesKeywords?: string,
+    currentFitnessLevel?: string,
+    MET_Target?: number,
+    gymDays?: string[]
 }

@@ -34,3 +34,13 @@ body {
 a {
     all: unset
 }
+
+.profileForm {
+    display: grid;
+    gap: 2em;
+    grid-template-columns: 1fr 1fr;
+}
+.doubleColumn {
+    grid-column-start: 1;
+    grid-column-end: 3;
+}

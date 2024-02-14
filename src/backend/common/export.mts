@@ -4,6 +4,9 @@ import { json2csv } from "json-2-csv"
 import { getTimestamp } from "./utilities.mjs"
 import { PutObjectCommand, S3Client, GetObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import { queryHealthData } from "./db/healtData/query.mjs"
+import { HealthDataType } from "./db/healtData/types.mjs"
+import { Provider } from "./types.mjs"
 const bucketName = "open-fit-companion"
 const linkExpirySeconds = 60 * 5
 const client = new S3Client({});
@@ -27,7 +30,7 @@ const getDownloadURL = async (csvData: string, filename: string) => {
     })
     return url
 }
-export const exportHealthData = async () => {
+export const exportAllHealthData = async () => {
     const data = await scanHealthData()
     const csv = await json2csv(data, {
         emptyFieldValue: ""
@@ -36,4 +39,3 @@ export const exportHealthData = async () => {
     // upload to s3
     return getDownloadURL(csv, filename)
 }
-

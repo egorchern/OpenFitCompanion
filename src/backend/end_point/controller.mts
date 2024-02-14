@@ -3,7 +3,7 @@ import { selectHealthData } from "../common/db/healtData/select.mjs";
 import { HealthDataType } from "../common/db/healtData/types.mjs";
 import { HealthData, Provider } from "../common/types.mjs";
 import { insertPushSubscription } from "../common/db/pushSubscription/insert.mjs";
-import { exportHealthData } from "../common/export.mjs";
+import { exportAllHealthData } from "../common/export.mjs";
 import { getGoal } from "../common/db/goals/select.mjs";
 import { GoalType } from "../common/db/goals/types.mjs";
 import { selectUserData } from "../common/db/userData/select.mjs";
@@ -58,7 +58,7 @@ export const handleRequest = async (method: string, path: string, event: any) =>
     case ("POST"): {
       switch (path) {
         case ("/export"): {
-          const downloadUrl = await exportHealthData()
+          const downloadUrl = await exportAllHealthData()
 
           return {
             statusCode: 200,

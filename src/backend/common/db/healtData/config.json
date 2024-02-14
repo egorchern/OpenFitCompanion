@@ -1,4 +1,5 @@
 {
     "healthDataTableName": "HealthData",
-    "LocalDbEndpoint": "http://localhost:8000"
+    "LocalDbEndpoint": "http://localhost:8000",
+    "region": "us-east-1"
 }
