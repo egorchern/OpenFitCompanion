@@ -44,3 +44,8 @@ a {
     grid-column-start: 1;
     grid-column-end: 3;
 }
+.chatWindow{
+    overflow-y: auto;
+    max-height: 80vh;
+    max-width: 60em;
+}

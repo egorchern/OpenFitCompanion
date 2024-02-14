@@ -26,6 +26,13 @@ const threadID = "thread_P2WBj3hsBtH7LdpMfoIb1i1c"
 //     role: "user"
 //   }
 // )
+export const getThreadMessages = async () => {
+    const messages = await openai.beta.threads.messages.list(
+        threadID
+      );
+    console.log(JSON.stringify(messages))
+    return messages
+}
 export const sendProfile = async () => {
     const profile = await selectUserData(UserDataType.Profile)
     console.log(profile)
@@ -42,7 +49,8 @@ export const createActivityPlan = async (curDate: Date) => {
     const monday = getMonday(curDate)
     const data = await queryHealthData(toShortISODate(monday), toShortISODate(curDate), HealthDataType.Activity, Provider.Unified)
     const prompt = `using this week's activity data, create physical activity plan for ${toShortISODate(curDate)}
-activity data: """${JSON.stringify(data)}""". just provide activities and their description. Make sure the plan provides balanced activity for the week`
+activity data: """${JSON.stringify(data)}""". just provide activities and their description. Make sure the plan provides balanced activity for the week
+make sure that the plan provides enough activity to hit my MET weekly target as per profile`
     const message = await openai.beta.threads.messages.create(
         threadID,
         {
@@ -58,19 +66,13 @@ activity data: """${JSON.stringify(data)}""". just provide activities and their 
     );
     const waitStatuses = ["queued", "in_progress"]
     // poll the run for completion
-    while (run.status in waitStatuses){
+    while (waitStatuses.includes(run.status)){
         await sleep(getRandomInt(800, 1600))
         run = await openai.beta.threads.runs.retrieve(
             threadID,
             run.id
           );
     }
-    // Get results
-    const messages = await openai.beta.threads.messages.list(
-        threadID
-      );
-    console.log(messages)
-    return messages
     
 }
 // const thread = await openai.beta.threads.create(
@@ -78,4 +80,5 @@ activity data: """${JSON.stringify(data)}""". just provide activities and their 
 // )
 // console.log(thread)
 // await sendProfile()
-await createActivityPlan(new Date("2024-02-14"))
+// await createActivityPlan(new Date("2024-02-14"))
+await getThreadMessages()

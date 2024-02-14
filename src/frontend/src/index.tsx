@@ -11,6 +11,7 @@ import DailyReport from './routes/DailyReport';
 import Root from './routes/Root';
 import Profile from './routes/Profile';
 import Navigation from './components/Navigation';
+import AI from './routes/AI';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile/>
+      },
+      {
+        path: "/ai",
+        element: <AI/>
       },
       {
         path: "*",

@@ -12,18 +12,21 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import MenuIcon from '@mui/icons-material/Menu';
+import AssistantIcon from '@mui/icons-material/Assistant';
 import { Link, NavLink } from 'react-router-dom';
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
-const navigablePages = ["Dashboard", "Profile", "Reports"]
+const navigablePages = ["Dashboard", "Profile", "Reports", "AI"]
 const pageIconsMap: any = {
     "Dashboard": DashboardIcon,
     "Profile": AccountCircleIcon,
-    "Reports": CalendarMonthIcon
+    "Reports": CalendarMonthIcon,
+    "AI": AssistantIcon
 }
 const pagePathMap: any = {
     "Dashboard": "/",
     "Profile": "/profile",
-    "Reports": "/reports"
+    "Reports": "/reports",
+    "AI": "/ai"
 }
 function Navigation() {
     const [isOpen, setIsOpen] = useState(false)
