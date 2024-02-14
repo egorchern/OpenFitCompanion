@@ -9,7 +9,7 @@ const preparedPrompts = {
     just provide activities and their description. Make sure the plan provides balanced activity for the week.
     make sure that the plan provides enough activity to hit my MET weekly target as per profile. Make sure to include strength-training exercises that utilize weights on gym going days`,
     "MealPlan": `create a meal plan for today`,
-    "FeedbackOverall": `Using this month's health data, provide a feedback on my health. Make sure to provide what areas I have done well in, and areas that I need to improve on. today's date: ${toShortISODate(curDate)}. `
+    "FeedbackOverall": `Using this month's health data, provide an overall feedback on my health. Make sure to provide what 3 areas I have done well in, and 3 areas that I need to improve on. Don't mention specific days, talk about the overall situation. Use latest healthy lifestyle recommendations from bodies such as WHO as reference. today's date: ${toShortISODate(curDate)}. `
 }
 export default function Control() {
     const [prompt, setPrompt] = useState("")

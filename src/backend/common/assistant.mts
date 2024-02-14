@@ -5,6 +5,7 @@ import { getMonday, getRandomInt, sleep, toShortISODate } from "./utilities.mjs"
 import { queryHealthData } from "./db/healtData/query.mjs";
 import { HealthDataType } from "./db/healtData/types.mjs";
 import { Provider } from "./types.mjs";
+import { selectHealthData } from "./db/healtData/select.mjs";
 const openai = new OpenAI()
 const assistantID = "asst_25NkwbnXpgZ7u71Efatue99o"
 const threadID = "thread_P2WBj3hsBtH7LdpMfoIb1i1c"
@@ -28,7 +29,9 @@ const threadID = "thread_P2WBj3hsBtH7LdpMfoIb1i1c"
 // )
 export const getThreadMessages = async () => {
     const messages = await openai.beta.threads.messages.list(
-        threadID
+        threadID, {
+            limit: 10
+        }
       );
     console.log(JSON.stringify(messages))
     return messages
@@ -44,6 +47,30 @@ export const sendProfile = async () => {
             content: prompt
         }
     );
+}
+export const sendAIDataBulk = async (startDate: Date, endDate: Date) => {
+    const activityData = await queryHealthData(toShortISODate(startDate), toShortISODate(endDate), HealthDataType.Activity, Provider.Unified)
+    const sleepData = await queryHealthData(toShortISODate(startDate), toShortISODate(endDate), HealthDataType.Sleep, Provider.Unified)
+    await openai.beta.threads.messages.create(threadID, {
+        role: "user",
+        content: `Update for Activity data: """${JSON.stringify(activityData)}"""`
+    })
+    await openai.beta.threads.messages.create(threadID, {
+        role: "user",
+        content: `Update for Sleep data: """${JSON.stringify(sleepData)}"""`
+    })
+}
+export const sendAIData = async (date: Date) => {
+    const activityData = await selectHealthData(toShortISODate(date), HealthDataType.Activity, Provider.Unified, true)
+    const sleepData = await selectHealthData(toShortISODate(date), HealthDataType.Sleep, Provider.Unified, true)
+    await openai.beta.threads.messages.create(threadID, {
+        role: "user",
+        content: `Update for Activity data: """${JSON.stringify(activityData)}"""`
+    })
+    await openai.beta.threads.messages.create(threadID, {
+        role: "user",
+        content: `Update for Sleep data: """${JSON.stringify(sleepData)}"""`
+    })
 }
 
 export const executePrompt = async (prompt: string) => {
@@ -80,10 +107,5 @@ make sure that the plan provides enough activity to hit my MET weekly target as 
     await executePrompt(prompt)
     
 }
-// const thread = await openai.beta.threads.create(
 
-// )
-// console.log(thread)
-// await sendProfile()
-// await createActivityPlan(new Date("2024-02-14"))
-await getThreadMessages()
+await sendAIData(new Date())
