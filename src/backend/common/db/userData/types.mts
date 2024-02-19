@@ -1,3 +1,4 @@
 export enum UserDataType {
-    Profile = "profile"
+    Profile = "profile",
+    GPT = "gpt"
 }

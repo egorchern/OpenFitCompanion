@@ -18,6 +18,7 @@ export const selectUserData = async (type: UserDataType) => {
             UserID: 1,
             Type: type
         },
+        ConsistentRead: true
         
     })
 

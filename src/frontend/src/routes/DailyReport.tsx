@@ -2,6 +2,7 @@ import {useLoaderData } from "react-router-dom";
 import {getMonday, toShortISODate} from "../components/utilities";
 
 import DailyActivity from "./DailyReport/DailyActivity";
+import AIFeedback from "./DailyReport/AIFeedback";
 
 function DailyReport() {
     const curDate = new Date(useLoaderData() as any);
@@ -16,6 +17,7 @@ function DailyReport() {
             curDate={curDate}
             startDate={startDate}
             />
+            <AIFeedback/>
         </main>
     )
 }
