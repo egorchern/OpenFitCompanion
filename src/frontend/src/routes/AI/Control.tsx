@@ -22,7 +22,7 @@ export default function Control() {
         mutation.mutate(prompt as any)
     }
     return (
-        <form className="flex-horizontal full-width chatWindow" onSubmit={handleSubmit}>
+        <form className="flex-horizontal small-gap full-width chatWindow" onSubmit={handleSubmit}>
             <Button variant='contained' onClick={() => {setPrompt(preparedPrompts.ActivityPlan)}}>Activity plan for Today</Button>
             <Button variant='contained' onClick={() => {setPrompt(preparedPrompts.MealPlan)}}>Meal plan</Button>
             <Button variant='contained' onClick={() => {setPrompt(preparedPrompts.FeedbackOverall)}}>Feedback on overall health</Button>

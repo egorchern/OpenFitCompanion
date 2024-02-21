@@ -3,13 +3,11 @@ import { generateDailyReport, generateRefreshReminder } from "../common/report.m
 import { sendPushNotification } from "../common/webpush.mjs"
 import { toShortISODate } from "../common/utilities.mjs"
 import { ReportType } from "../common/types.mjs"
-import { sendAIData } from "../common/assistant.mjs"
 const baseUrl = 'https://openfitcompanion.xyz'
 export const handler = async (ev: any) => {
     const type = ev.ReportType
     switch (type){
         case (ReportType.DAILY): {
-            await sendAIData(new Date());
             const {title, body} = await generateDailyReport()
             console.log(body)
             const subscription = await selectPushSubscription()

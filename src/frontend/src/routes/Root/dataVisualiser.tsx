@@ -49,7 +49,7 @@ export default function DataVisualiser() {
             />
 
             <h3>Activity</h3>
-            <div className='flex-horizontal'>
+            <div className='flex-horizontal small-gap'>
                 {
                     activityPropertyNames.map((name: string) => {
                         return (
@@ -61,7 +61,7 @@ export default function DataVisualiser() {
                 }
             </div>
             <h3>Sleep</h3>
-            <div className='flex-horizontal'>
+            <div className='flex-horizontal small-gap'>
                 {
                     sleepPropertyNames.map((name: string) => {
                         return (

@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "react-query"
+import { toShortISODate } from "../components/utilities"
 
 
 const PERSONAL_SECRET = localStorage.getItem("API_SECRET")
@@ -7,6 +8,28 @@ export function GetThread(userID: number){
   return useQuery(`thread_${userID}`, async () => {
     const url = new URL(`${baseApi}/threads`)
 
+    const response = await fetch(url, {
+      headers: {
+        "authorization": `Bearer ${PERSONAL_SECRET}`
+      },
+      method: "GET"
+    })
+    if (!response.ok){
+      console.log("err")
+      throw Error("bad token")
+    }
+    const result = await response.json()
+    return result
+  }, {
+    retry: 0
+  })
+}
+
+export function GetDayFeedback(date: Date){
+  const strDate = toShortISODate(date)
+  return useQuery(`thread_${strDate}`, async () => {
+    const url = new URL(`${baseApi}/ai_day_feedback`)
+    url.searchParams.append("date", strDate)
     const response = await fetch(url, {
       headers: {
         "authorization": `Bearer ${PERSONAL_SECRET}`

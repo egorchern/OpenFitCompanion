@@ -17,7 +17,9 @@ function DailyReport() {
             curDate={curDate}
             startDate={startDate}
             />
-            <AIFeedback/>
+            <AIFeedback
+            date={curDate}
+            />
         </main>
     )
 }

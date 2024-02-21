@@ -19,7 +19,7 @@ export default function SecretTokenSetter() {
     }
     return (
 
-        <form className="flex-horizontal">
+        <form className="flex-horizontal small-gap">
             {!isSet ? (
                 <>
                     <TextField id="API-SECRET" label='API SECRET' variant='outlined' onChange={(e) => {setSecretValue(e.target.value)}} />
