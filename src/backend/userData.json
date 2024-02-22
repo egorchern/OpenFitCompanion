@@ -1,20 +1,6 @@
 {
   "activity": [
     {
-      "Date": "2024-01-22",
-      "intenseActivity": 0,
-      "caloriesBurned": 32,
-      "Type": "activity_Unified",
-      "Provider": "Unified",
-      "date": "2024-01-22",
-      "steps": 508,
-      "provider": "Unified",
-      "moderateActivity": 90,
-      "CreatedAt": 1706019717,
-      "softActivity": 1320,
-      "type": "activity"
-    },
-    {
       "Date": "2024-01-23",
       "intenseActivity": 3127,
       "caloriesBurned": 627,
@@ -416,29 +402,26 @@
       "steps": 3458,
       "provider": "Unified",
       "moderateActivity": 1620,
-      "CreatedAt": 1708477310,
+      "CreatedAt": 1708532584,
       "softActivity": 2431,
+      "type": "activity"
+    },
+    {
+      "Date": "2024-02-21",
+      "intenseActivity": 1538,
+      "caloriesBurned": 217,
+      "Type": "activity_Unified",
+      "Provider": "Unified",
+      "date": "2024-02-21",
+      "steps": 1741,
+      "provider": "Unified",
+      "moderateActivity": 240,
+      "CreatedAt": 1708552744,
+      "softActivity": 4710,
       "type": "activity"
     }
   ],
   "sleep": [
-    {
-      "bedtimeStart": 1705897321,
-      "Date": "2024-01-22",
-      "bedtimeEnd": 1705922041,
-      "Type": "sleep_Unified",
-      "Provider": "Unified",
-      "sleepScore": 71,
-      "date": "2024-01-22",
-      "lightSleepDuration": 11415,
-      "sleepLatency": 195,
-      "sleepEfficiency": 94,
-      "provider": "Unified",
-      "deepSleepDuration": 9705,
-      "remSleepDuration": 4230,
-      "CreatedAt": 1705958747,
-      "type": "sleep"
-    },
     {
       "bedtimeStart": 1705985701,
       "Date": "2024-01-23",
@@ -939,6 +922,25 @@
       "deepSleepDuration": 10320,
       "remSleepDuration": 3450,
       "CreatedAt": 1708447950,
+      "type": "sleep"
+    },
+    {
+      "bedtimeStart": 1708490534,
+      "totalSleepDuration": 429,
+      "averageHR": 61,
+      "Date": "2024-02-21",
+      "bedtimeEnd": 1708516244,
+      "Type": "sleep_Unified",
+      "Provider": "Unified",
+      "sleepScore": 78,
+      "date": "2024-02-21",
+      "lightSleepDuration": 11025,
+      "sleepLatency": 285,
+      "sleepEfficiency": 95,
+      "provider": "Unified",
+      "deepSleepDuration": 11730,
+      "remSleepDuration": 3390,
+      "CreatedAt": 1708532598,
       "type": "sleep"
     }
   ],

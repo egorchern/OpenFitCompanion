@@ -12,6 +12,7 @@ import Root from './routes/Root';
 import Profile from './routes/Profile';
 import Navigation from './components/Navigation';
 import AI from './routes/AI';
+import WeeklyReport from './routes/WeeklyReport';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -38,7 +39,14 @@ const router = createBrowserRouter([
         loader: (params: any) => {
           return params.params.date
         }
-      }
+      },
+      {
+        path: "weeklyReport/:date",
+        element: <WeeklyReport />,
+        loader: (params: any) => {
+          return params.params.date
+        }
+      },
     ]
   },
   

@@ -110,7 +110,7 @@ export const handleRequest = async (method: string, path: string, event: any) =>
           }
         }
         case ("/prompt"): {
-          const prompt = event?.body
+          const prompt = JSON.parse(event?.body)
           await executePrompt(prompt)
           return {
             statusCode: 200
