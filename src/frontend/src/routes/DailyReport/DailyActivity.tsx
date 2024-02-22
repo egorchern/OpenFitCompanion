@@ -1,5 +1,5 @@
 import { Form, useLoaderData } from "react-router-dom";
-import { getDateDiffInDays, getMonday, toShortISODate } from "../../components/utilities";
+import { calcActivity, getDateDiffInDays, getMonday, toShortISODate } from "../../components/utilities";
 import { QueryHealthData } from "../../hooks/queryHealthData";
 import { ActivityData, GoalType, HealthDataType, Provider } from "../../components/types";
 import { GetGoal } from "../../hooks/getGoal";
@@ -7,20 +7,6 @@ import { useEffect, useMemo } from "react";
 import DataGraph from "../../components/dataGraph";
 import { act } from "react-dom/test-utils";
 
-const intensityMETWeights = {
-    softActivity: 1.75,
-    moderateActivity: 3,
-    intenseActivity: 5.5
-}
-
-const calcActivity = (activityData: ActivityData) => {
-    const METDone = Math.floor(
-        ((activityData.softActivity / 60) * intensityMETWeights.softActivity) +
-        ((activityData.moderateActivity / 60) * intensityMETWeights.moderateActivity) +
-        ((activityData.intenseActivity / 60) * intensityMETWeights.intenseActivity)
-    )
-    return METDone
-}
 
 const getScoreEmoji = (score: number) => {
     const scorePointsToEmoji: any = {

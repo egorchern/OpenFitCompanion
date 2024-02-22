@@ -1,3 +1,4 @@
+import { ActivityData } from "./types"
 
 export const toShortISODate = (date: Date): string => {
     return date.toISOString().slice(0, 10)
@@ -14,6 +15,20 @@ export function getMonday( date: Date ) {
     if( day !== 1 ) 
     tempDate.setHours(-24 * (day - 1)); 
     return tempDate;
+}
+const intensityMETWeights = {
+    softActivity: 1.75,
+    moderateActivity: 3,
+    intenseActivity: 5.5
+}
+
+export const calcActivity = (activityData: ActivityData) => {
+    const METDone = Math.floor(
+        ((activityData.softActivity / 60) * intensityMETWeights.softActivity) +
+        ((activityData.moderateActivity / 60) * intensityMETWeights.moderateActivity) +
+        ((activityData.intenseActivity / 60) * intensityMETWeights.intenseActivity)
+    )
+    return METDone
 }
 
 export function getDateDiffInDays(a: Date, b: Date) {
