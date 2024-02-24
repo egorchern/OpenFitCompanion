@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { ActivityData, HealthDataType } from "../../components/types"
+import { ActivityData, HealthDataType, SleepData } from "../../components/types"
 import { calcActivity, getDateDiffInDays, toShortISODate } from "../../components/utilities"
 import { QueryHealthData } from "../../hooks/queryHealthData"
 import DataGraph from "../../components/dataGraph"
@@ -8,29 +8,28 @@ interface AggregateActivityProps {
     startDate: Date,
     endDate: Date
 }
-export default function AggregateActivity(props: AggregateActivityProps) {
+export default function AggregateSleep(props: AggregateActivityProps) {
     const { startDate, endDate } = props
-    const { data } = QueryHealthData(toShortISODate(startDate), toShortISODate(endDate), HealthDataType.Activity)
+    const { data } = QueryHealthData(toShortISODate(startDate), toShortISODate(endDate), HealthDataType.Sleep)
     const unifiedData = data ? data[2]?.data : null
-    const mets = useMemo(() => {
-        if (!unifiedData) {
-            return null
+    const sleepScores = useMemo(() => {
+        if (!unifiedData){
+            return []
         }
-        return unifiedData.map((element: ActivityData) => {
-            return calcActivity(element)
+        return unifiedData.map((element: SleepData) => {
+            return element.sleepScore
         })
     }, [unifiedData])
-
     const stats = useMemo(() => {
-        if (!mets) {
+        if (!sleepScores) {
             return null
         }
 
         return {
-            stdev: Math.round(jStat.stdev(mets)),
-            mean: Math.round(jStat.mean(mets))
+            stdev: Math.round(jStat.stdev(sleepScores)),
+            mean: Math.round(jStat.mean(sleepScores))
         }
-    }, [mets])
+    }, [sleepScores])
 
     const graphData = useMemo(() => {
         if (!unifiedData) {
@@ -40,16 +39,16 @@ export default function AggregateActivity(props: AggregateActivityProps) {
             {
                 data: unifiedData.map((element: ActivityData) => {
                     return {
-                        METMinutes: stats?.mean,
+                        sleepScore: stats?.mean,
                         Date: element.date
                     }
                 }),
                 provider: "Mean"
             },
             {
-                data: mets.map((element: number, index: number) => {
+                data: sleepScores.map((element: number, index: number) => {
                     return {
-                        METMinutes: element,
+                        sleepScore: element,
                         Date: unifiedData[index].date
                     }
 
@@ -58,16 +57,17 @@ export default function AggregateActivity(props: AggregateActivityProps) {
             }
 
         ]
-    }, [unifiedData, mets, stats])
+    }, [unifiedData, sleepScores, stats])
+    console.log(graphData)
     return (
         <div className="flex-vertical full-width small-gap">
-            <h2>Activity:</h2>
+            <h2>Sleep:</h2>
             <DataGraph
-                type={HealthDataType.Activity}
+                type={HealthDataType.Sleep}
                 startDate={startDate}
                 data={graphData}
                 interval={getDateDiffInDays(startDate, endDate)}
-                propertyName={"METMinutes"} />
+                propertyName={"sleepScore"} />
             <div>
                 <p>Mean: {stats?.mean}</p>
                 <p>Standard Deviation (Consistency): {stats?.stdev}</p>

@@ -39,6 +39,7 @@ providerToColor[Provider.Withings] = "rgb(53, 162, 235)"
 providerToColor[Provider.Unified] = "rgb(20, 225, 129)"
 providerToColor["Current"] =  "rgb(55, 162, 235)"
 providerToColor.Goal =  "rgb(20, 225, 129)"
+providerToColor["Mean"] =  "rgb(20, 225, 129)"
 export default function DataGraph(props: dataGraphProps) {
   
   const {type, data, interval, startDate, propertyName} = props

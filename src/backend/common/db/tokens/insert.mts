@@ -5,7 +5,8 @@ import { getRandomInt, getTimestamp, sleep } from "../../utilities.mjs";
 import config from "./config.json" assert { type: "json" }
 const dbConfig: DynamoDBClientConfig = {}
 if (process.env.NODE_ENV === "dev"){
-    dbConfig.endpoint = config.LocalDbEndpoint
+    // dbConfig.endpoint = config.LocalDbEndpoint
+    dbConfig.region = "us-east-1"
 }
 const client = new DynamoDBClient(dbConfig);
 const ddbDocClient = DynamoDBDocumentClient.from(client);
