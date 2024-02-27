@@ -26,6 +26,23 @@ export const selectAIFeedback = async (date: Date) => {
     const response = await ddbDocClient.send(command)
     return response.Item
 }
+
+export const selectAIWorkout = async (date: Date) => {
+    const type = `AI_WORKOUT_${toShortISODate(date)}`
+    const command = new GetCommand({
+        TableName: config.TableName,
+        Key: {
+            UserID: 1,
+            Type: type
+        },
+        ConsistentRead: true
+        
+    })
+
+    const response = await ddbDocClient.send(command)
+    return response.Item
+}
+
 export const selectUserData = async (type: UserDataType) => {
     const command = new GetCommand({
         TableName: config.TableName,

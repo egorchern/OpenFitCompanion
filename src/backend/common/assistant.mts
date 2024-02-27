@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { selectAIFeedback, selectUserData } from "./db/userData/select.mjs";
+import { selectAIFeedback, selectAIWorkout, selectUserData } from "./db/userData/select.mjs";
 import { UserDataType } from "./db/userData/types.mjs";
 import { getDateOffset, getMonday, getRandomInt, sleep, toShortISODate } from "./utilities.mjs";
 import { queryHealthData } from "./db/healtData/query.mjs";
@@ -7,7 +7,7 @@ import { HealthDataType } from "./db/healtData/types.mjs";
 import { Provider } from "./types.mjs";
 import { selectHealthData } from "./db/healtData/select.mjs";
 import { writeFileSync, createReadStream } from "fs";
-import { insertAIFeedback, insertUserData } from "./db/userData/insert.mjs";
+import { insertAIFeedback, insertAIWorkout, insertUserData } from "./db/userData/insert.mjs";
 import { MessageContentText } from "openai/resources/beta/threads/index.mjs";
 const openai = new OpenAI()
 const assistantID = "asst_25NkwbnXpgZ7u71Efatue99o"
@@ -91,15 +91,27 @@ export const executePrompt = async (prompt: string, waitForCompletion = false) =
     
 }
 
-export const createActivityPlan = async (curDate: Date) => {
-    
-    const prompt = `Create activity plan for: ${toShortISODate(curDate)}. 
-    Make sure to use userData.json file to tailor your response. 
-    First, work out the day of the week, then create the activity plan. Make sure to include weights exercises on gym going days, otherwise recommend no-equipment needed exercises. 
-    Please include variety of activities
-    Indicate MET minutes for each activity. Only use this week's activity data. Make sure total MET minutes for the day are not too high considering profile's MET_Target
+export const getDaysWorkoutPlan = async (date: Date) => {
+    const dbData = await selectAIWorkout(date)
+    if (dbData){
+        console.log(dbData.feedback)
+        const rx = /\`\`\`(.*)\`\`\`/g
+        const json = dbData.feedback.search(rx)
+        console.log(json)
+        return dbData
+    }
+    const prompt = `Create activity plan for: ${toShortISODate(date)}. Format your entire response in JSON in the following format: [{"exerciseTitle", "exerciseDuration", "exerciseIntensityCategory", "exerciseStartAtTime", "exerciseNotes"}]. exerciseStartAtTime can only have the following values: "morning", "late afternoon" and "early evening". exerciseIntensityCategory can only have the following values: "soft", "moderate" and "intense". in exerciseNotes include textual description of how to perform the exercise, as well as that exercise's benefits. Please include some activities for all start times, however the majority of activities should be scheduled in late afternoon. Make sure to use userData.json file to tailor your response. First, work out the day of the week, then calculate if the day is a gym-going day (if it is in profile's gym-going days), then create the activity plan accordingly. Include exercises that use equipment on gym going days, otherwise only include exercises that don't require any equipment. Include variety of activities. Only use this week's activity data. Make sure total MET minutes for the day are not too high considering the weekly MET target. Use the following minutes to MET minutes conversion map: """ "intensityMETWeights" = { "softActivity": 1.75, "moderateActivity": 3, "intenseActivity": 5.5 } """
     `
-    await executePrompt(prompt)
+    const run = await executePrompt(prompt, true)
+    await sleep(10000)
+    const messages = await getThreadMessages()
+    const feedback = (messages.data[0].content[0] as MessageContentText).text.value
+
+    await insertAIWorkout({
+        date: toShortISODate(date),
+        feedback: feedback
+    })
+    return feedback
     
 }
 
@@ -160,3 +172,5 @@ export const createNewThread = async () => {
         threadID: newThread.id
     }, UserDataType.GPT)
 }
+
+await getDaysWorkoutPlan(new Date("2024-02-27"))

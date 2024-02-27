@@ -24,6 +24,21 @@ export const insertAIFeedback = async (data: any) => {
     })
     const response = await ddbDocClient.send(putTokenCommand)
 }
+
+export const insertAIWorkout = async (data: any) => {
+    let copy: any = structuredClone(data)
+    Object.keys(copy).forEach((key: any) => copy[key] === undefined ? delete copy[key] : {});
+    copy.CreatedAt = getTimestamp();
+    copy.UserID = 1
+    copy.Type = `AI_WORKOUT_${copy.date}`
+    const putTokenCommand = new PutCommand({
+        TableName: config.TableName,
+        Item: copy,
+        
+    })
+    const response = await ddbDocClient.send(putTokenCommand)
+}
+
 export const insertUserData = async (data: any, type: UserDataType) => {
     let copy: any = structuredClone(data)
     Object.keys(copy).forEach((key: any) => copy[key] === undefined ? delete copy[key] : {});

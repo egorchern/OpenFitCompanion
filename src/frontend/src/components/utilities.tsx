@@ -16,7 +16,7 @@ export function getMonday( date: Date ) {
     tempDate.setHours(-24 * (day - 1)); 
     return tempDate;
 }
-const intensityMETWeights = {
+export const intensityMETWeights = {
     softActivity: 1.75,
     moderateActivity: 3,
     intenseActivity: 5.5
