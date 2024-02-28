@@ -6,5 +6,6 @@ export interface IFormInputs {
     excludeActivitiesKeywords?: string,
     currentFitnessLevel?: string,
     MET_Target?: number,
-    gymDays?: string[]
+    gymDays?: string[],
+    homeEquipment?: string
 }

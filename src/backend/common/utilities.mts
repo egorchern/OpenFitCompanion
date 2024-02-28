@@ -20,7 +20,13 @@ export function getMonday( date: Date ) {
     tempDate.setHours(-24 * (day - 1)); 
     return tempDate;
 }
-  
+
+export const intensityMETWeights = {
+    softActivity: 1.75,
+    moderateActivity: 3,
+    intenseActivity: 5.5
+}
+
 export const getDateOffset = (startDate: Date, offset: number) => {
     let tempDate = structuredClone(startDate)
     tempDate.setDate(tempDate.getDate() + offset)

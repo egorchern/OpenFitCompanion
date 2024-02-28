@@ -12,6 +12,16 @@ export interface ActivityData extends BaseHealthData{
     moderateActivity: number,
     intenseActivity: number,
 }
+export const timesOfDay = ["morning", "midday", "late afternoon", "early evening"]
+export interface ActivityItem {
+    exerciseTitle: string,
+    exerciseStartAtTime: string,
+    exerciseDuration: number,
+    exerciseCategory: string,
+    exerciseIntensityCategory: "softActivity" | "moderateActivity" | "intenseActivity",
+    exerciseNotes: string,
+    exerciseMETMinutes: number
+}
 export interface SleepData extends BaseHealthData{
     bedtimeStart: number,
     bedtimeEnd: number,

@@ -144,6 +144,17 @@ function ProfileForm(props: profileFormProps) {
 
                 )}
             />
+            <Controller
+                name="homeEquipment"
+                control={control}
+                render={({ field }) => (
+                    <FormControl className="doubleColumn">
+                        <TextField multiline value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
+                        <FormHelperText id="outlined-weight-helper-text">AI will not recommend exercises that uses equipment that you don't have other than on gym-going days</FormHelperText>
+                    </FormControl>
+
+                )}
+            />
             <Button type="submit" variant="contained">Submit</Button>
         </form>
     )
