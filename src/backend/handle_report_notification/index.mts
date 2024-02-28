@@ -1,11 +1,11 @@
 import { selectPushSubscription } from "../common/db/pushSubscription/select.mjs"
-import { generateDailyReport, generateRefreshReminder } from "../common/report.mjs"
+import { createActivityReminder, generateDailyReport, generateRefreshReminder } from "../common/report.mjs"
 import { sendPushNotification } from "../common/webpush.mjs"
 import { toShortISODate } from "../common/utilities.mjs"
 import { ReportType } from "../common/types.mjs"
 const baseUrl = 'https://openfitcompanion.xyz'
 export const handler = async (ev: any) => {
-    const type = ev.ReportType
+    const type = ev.reportType
     switch (type){
         case (ReportType.DAILY): {
             const {title, body} = await generateDailyReport()
@@ -16,12 +16,22 @@ export const handler = async (ev: any) => {
             await sendPushNotification(title, body, url, subscription)
             break;
         }
+        case (ReportType.ACTIVITY): {
+            const timeOfDay = ev.timeOfDay
+            const {title, body} = await createActivityReminder(timeOfDay)
+            const subscription = await selectPushSubscription()
+            const curDate = toShortISODate(new Date())
+            const url = `${baseUrl}/exercisePlan/${curDate}/${timeOfDay}`
+            await sendPushNotification(title, body, url, subscription)
+            break;
+        }
         case (ReportType.REFRESH_REMINDER): {
             const {title, body} = await generateRefreshReminder()
             console.log(body)
             const subscription = await selectPushSubscription()
             await sendPushNotification(title, body, baseUrl, subscription)
         }
+        
     }
     
 }

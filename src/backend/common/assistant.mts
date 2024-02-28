@@ -118,7 +118,7 @@ export const getDaysWorkoutPlan = async (date: Date) => {
     }
     const prompt = `Create activity plan for: ${toShortISODate(date)}. Format your entire response in JSON in the following format: 
     [{"exerciseTitle": string, "exerciseStartAtTime": string, "exerciseDuration": number, "exerciseCategory": string, "exerciseIntensityCategory": string, "exerciseNotes": string}] 
-    exerciseStartAtTime can only have the following values: "morning", "midday", "late afternoon" and "early evening". 
+    exerciseStartAtTime can only have the following values: "morning", "midday", "late_afternoon" and "early_evening". 
     exerciseCategory should indicate the type of exercise such as cardio, strength building etc
     exerciseIntensityCategory can only have the following values: "softActivity", "moderateActivity" and "intenseActivity". 
     In exerciseNotes include detailed description of how to perform the exercise, as well as that exercise's benefits. 

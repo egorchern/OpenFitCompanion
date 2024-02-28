@@ -12,7 +12,7 @@ export interface ActivityData extends BaseHealthData{
     moderateActivity: number,
     intenseActivity: number,
 }
-export const timesOfDay = ["morning", "midday", "late afternoon", "early evening"]
+export const timesOfDay = ["morning", "midday", "late_afternoon", "early_evening"]
 export interface ActivityItem {
     exerciseTitle: string,
     exerciseStartAtTime: string,
@@ -37,6 +37,7 @@ export interface SleepData extends BaseHealthData{
 export const enum ReportType {
     WEEKLY = "weekly",
     DAILY = "daily",
+    ACTIVITY = "activity",
     REFRESH_REMINDER = "reminder"
 }
 export const enum Provider {

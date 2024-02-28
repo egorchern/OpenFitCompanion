@@ -13,6 +13,7 @@ import Profile from './routes/Profile';
 import Navigation from './components/Navigation';
 import AI from './routes/AI';
 import WeeklyReport from './routes/WeeklyReport';
+import Workout from './routes/Workout';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -45,6 +46,13 @@ const router = createBrowserRouter([
         element: <WeeklyReport />,
         loader: (params: any) => {
           return params.params.date
+        }
+      },
+      {
+        path: "exercisePlan/:date/:timeOfDay",
+        element: <Workout />,
+        loader: (params: any) => {
+          return params.params
         }
       },
     ]

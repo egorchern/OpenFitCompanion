@@ -20,14 +20,12 @@ export function GetThread(userID: number){
     }
     const result = await response.json()
     return result
-  }, {
-    retry: 0
   })
 }
 
 export function GetDayFeedback(date: Date){
   const strDate = toShortISODate(date)
-  return useQuery(`thread_${strDate}`, async () => {
+  return useQuery(`dayFeedback_${strDate}`, async () => {
     const url = new URL(`${baseApi}/ai_day_feedback`)
     url.searchParams.append("date", strDate)
     const response = await fetch(url, {
@@ -42,10 +40,30 @@ export function GetDayFeedback(date: Date){
     }
     const result = await response.json()
     return result
-  }, {
-    retry: 0
   })
 }
+
+export function GetDayWorkout(date: Date, timeOfDay: string){
+  const strDate = toShortISODate(date)
+  return useQuery(`dayWorkout_${strDate}`, async () => {
+    const url = new URL(`${baseApi}/ai_workout`)
+    url.searchParams.append("date", strDate)
+    url.searchParams.append("timeOfDay", timeOfDay)
+    const response = await fetch(url, {
+      headers: {
+        "authorization": `Bearer ${PERSONAL_SECRET}`
+      },
+      method: "GET"
+    })
+    if (!response.ok){
+      console.log("err")
+      throw Error("bad token")
+    }
+    const result = await response.json()
+    return result
+  })
+}
+
 
 export function ExecutePrompt() {
     return useMutation({

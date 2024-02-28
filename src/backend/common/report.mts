@@ -24,6 +24,12 @@ const getScoreEmoji = (score: number) => {
 
 }
 
+export const createActivityReminder = async (timeOfDay: string) => {
+    return {
+        title: `Activity: ${timeOfDay}`,
+        body: "Click to assess your progress and curated exercise plan"
+    }
+}
 const intensityMETWeights = {
     softActivity: 1.75,
     moderateActivity: 3,
