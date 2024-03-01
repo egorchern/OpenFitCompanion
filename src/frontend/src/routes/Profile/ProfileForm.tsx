@@ -43,7 +43,7 @@ function ProfileForm(props: profileFormProps) {
                 }}
                 control={control}
                 render={({ field }) => (
-                    <TextField value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
+                    <TextField InputLabelProps={{shrink: !!field.value}} value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
                 )}
             />
             <Controller
@@ -58,6 +58,7 @@ function ProfileForm(props: profileFormProps) {
                         InputProps={{
                             endAdornment: <InputAdornment position="end">cm</InputAdornment>
                         }}
+                        InputLabelProps={{shrink: !!field.value}}
                         value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
                 )}
             />
@@ -73,6 +74,7 @@ function ProfileForm(props: profileFormProps) {
                         InputProps={{
                             endAdornment: <InputAdornment position="end">kg</InputAdornment>
                         }}
+                        InputLabelProps={{shrink: !!field.value}}
                         value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
                 )}
             />
@@ -128,7 +130,8 @@ function ProfileForm(props: profileFormProps) {
                 control={control}
                 render={({ field }) => (
                     <FormControl >
-                        <TextField value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
+                        
+                        <TextField InputLabelProps={{shrink: !!field.value}} value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
                         <FormHelperText id="outlined-weight-helper-text">WHO recommends a minimum of 450-900 MET per week</FormHelperText>
                     </FormControl>
                 )}
@@ -138,7 +141,7 @@ function ProfileForm(props: profileFormProps) {
                 control={control}
                 render={({ field }) => (
                     <FormControl className="doubleColumn">
-                        <TextField multiline value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
+                        <TextField InputLabelProps={{shrink: !!field.value}} multiline value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
                         <FormHelperText id="outlined-weight-helper-text">Activities you don't wish to be recommended. Example: push-up, bench press</FormHelperText>
                     </FormControl>
 
@@ -149,7 +152,7 @@ function ProfileForm(props: profileFormProps) {
                 control={control}
                 render={({ field }) => (
                     <FormControl className="doubleColumn">
-                        <TextField multiline value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
+                        <TextField InputLabelProps={{shrink: !!field.value}} multiline value={field.value} type='number' label={field.name} onChange={field.onChange} variant="outlined" />
                         <FormHelperText id="outlined-weight-helper-text">AI will not recommend exercises that uses equipment that you don't have other than on gym-going days</FormHelperText>
                     </FormControl>
 

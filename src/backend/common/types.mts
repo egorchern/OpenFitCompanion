@@ -20,7 +20,8 @@ export interface ActivityItem {
     exerciseCategory: string,
     exerciseIntensityCategory: "softActivity" | "moderateActivity" | "intenseActivity",
     exerciseNotes: string,
-    exerciseMETMinutes: number
+    exerciseMETMinutes: number,
+    youtubeUrl?: string
 }
 export interface SleepData extends BaseHealthData{
     bedtimeStart: number,

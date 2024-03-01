@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { selectAIFeedback, selectAIWorkout, selectUserData } from "./db/userData/select.mjs";
 import { UserDataType } from "./db/userData/types.mjs";
-import { getDateOffset, getMonday, getRandomInt, intensityMETWeights, sleep, toShortISODate } from "./utilities.mjs";
+import { getDateOffset, getDayOfWeek, getMonday, getRandomInt, intensityMETWeights, sleep, toShortISODate } from "./utilities.mjs";
 import { queryHealthData } from "./db/healtData/query.mjs";
 import { HealthDataType } from "./db/healtData/types.mjs";
 import { ActivityItem, Provider, timesOfDay } from "./types.mjs";
@@ -9,6 +9,7 @@ import { selectHealthData } from "./db/healtData/select.mjs";
 import { writeFileSync, createReadStream } from "fs";
 import { insertAIFeedback, insertAIWorkout, insertUserData } from "./db/userData/insert.mjs";
 import { MessageContentText } from "openai/resources/beta/threads/index.mjs";
+import { getExerciseVideoUrl } from "./api_requests/youtube/getVideo.mjs";
 const openai = new OpenAI()
 const assistantID = "asst_25NkwbnXpgZ7u71Efatue99o"
 
@@ -80,7 +81,7 @@ export const executePrompt = async (prompt: string, waitForCompletion = false) =
     }
     console.log(run)
     while (waitStatuses.includes(run.status)){
-        await sleep(5000)
+        await sleep(10000)
         run = await openai.beta.threads.runs.retrieve(
             threadID,
             run.id
@@ -91,15 +92,18 @@ export const executePrompt = async (prompt: string, waitForCompletion = false) =
     
 }
 
-const processFeedback = (text: string) => {
+const processFeedback = async (text: string) => {
     const regexp = /`\`\`json(.*)\`\`\`/gs
     const feedback = JSON.parse(Array.from(text.matchAll(regexp), m => m[1])[0]) as ActivityItem[]
     console.log(feedback)
-    feedback.forEach((activityItem) => {
+    await Promise.allSettled(feedback.map(async (activityItem, index) => {
         const METMinutes = intensityMETWeights[activityItem.exerciseIntensityCategory] * activityItem.exerciseDuration
         activityItem.exerciseMETMinutes = METMinutes
-    })
-    
+        const youtubeUrl = await getExerciseVideoUrl(activityItem.exerciseTitle)
+        console.log(youtubeUrl)
+        activityItem.youtubeUrl = youtubeUrl
+    }))
+
     const res: any = {}
     timesOfDay.map((time) => {
         res[time] = []
@@ -116,21 +120,23 @@ export const getDaysWorkoutPlan = async (date: Date) => {
     if (dbData){
         return dbData.feedback
     }
-    const prompt = `Create activity plan for: ${toShortISODate(date)}. Format your entire response in JSON in the following format: 
+    const prompt = `Create activity plan for: ${toShortISODate(date)} which is ${getDayOfWeek(date)}. Only use this week's activity data. Don't summarise prior information just give the answer. Format your entire response in JSON in the following format: 
     [{"exerciseTitle": string, "exerciseStartAtTime": string, "exerciseDuration": number, "exerciseCategory": string, "exerciseIntensityCategory": string, "exerciseNotes": string}] 
     exerciseStartAtTime can only have the following values: "morning", "midday", "late_afternoon" and "early_evening". 
     exerciseCategory should indicate the type of exercise such as cardio, strength building etc
     exerciseIntensityCategory can only have the following values: "softActivity", "moderateActivity" and "intenseActivity". 
     In exerciseNotes include detailed description of how to perform the exercise, as well as that exercise's benefits. 
+    Don't create groups of exercises as a single item, instead write them all as a separate exercise.
     Please include some activities for all values of exerciseStartAtTime, however the majority of activities should be scheduled in late afternoon. Make sure to use userData.json file to tailor your response. First, work out the day of the week, then calculate if the day is a gym-going day (if it is in profile's gym-going days), then create the activity plan accordingly. 
-    Include exercises that use equipment on gym going days at late afternoon. Otherwise only include exercises that either don't need equipment or use equipment that the user has at home. Include variety of activities. Only use this week's activity data. Make sure total MET minutes for the day are not too high considering the weekly MET target. 
+    Include intense strength training exercises that use equipment on gym going days at late afternoon. Otherwise, don't include exercises that need equipment. Prioritize variety of activities. Make sure total MET minutes for the day are not too high considering the weekly MET target. 
     Use the following minutes to MET minutes conversion map: """ "intensityMETWeights" = ${JSON.stringify(intensityMETWeights)} """
     `
     const run = await executePrompt(prompt, true)
     await sleep(10000)
     const messages = await getThreadMessages()
     const text = (messages.data[0].content[0] as MessageContentText).text.value
-    const feedback = processFeedback(text)
+    console.log(text)
+    const feedback = await processFeedback(text)
     
     await insertAIWorkout({
         date: toShortISODate(date),
@@ -198,4 +204,4 @@ export const createNewThread = async () => {
     }, UserDataType.GPT)
 }
 
-console.log(await getDaysWorkoutPlan(new Date("2024-02-28")))
+await getDaysWorkoutPlan(new Date("2024-03-01"))

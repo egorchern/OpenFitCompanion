@@ -10,6 +10,16 @@ export interface dataGraphProps{
     data: any[] | undefined
 }
 
+export interface ActivityItem {
+    exerciseTitle: string,
+    exerciseStartAtTime: string,
+    exerciseDuration: number,
+    exerciseCategory: string,
+    exerciseIntensityCategory: "softActivity" | "moderateActivity" | "intenseActivity",
+    exerciseNotes: string,
+    exerciseMETMinutes: number,
+    youtubeUrl?: string
+}
 export const enum GoalType {
     STEPS = 'steps',
     WEEKLY_ACTIVITY = 'activity',

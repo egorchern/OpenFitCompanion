@@ -20,7 +20,9 @@ export function getMonday( date: Date ) {
     tempDate.setHours(-24 * (day - 1)); 
     return tempDate;
 }
-
+export function getDayOfWeek(date: Date){
+    return new Date(date).toLocaleString("en", { weekday: "long" })
+}
 export const intensityMETWeights = {
     softActivity: 1.75,
     moderateActivity: 3,
