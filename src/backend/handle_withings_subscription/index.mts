@@ -1,7 +1,7 @@
 import {SNSClient, PublishCommand} from "@aws-sdk/client-sns"
 import config from "./config.json" assert { type: "json" }
-import { getAdapter } from "common/adapter.mjs"
-import { Provider } from "common/types.mjs"
+import { getAdapter } from "../common/adapter.mjs"
+import { Provider } from "../common/types.mjs"
 
 export const handler = async (event:any, context:any) =>  {
     if (typeof event === 'string'){

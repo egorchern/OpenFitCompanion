@@ -1,6 +1,6 @@
 import { requestRefreshToken } from "../common/api_requests/withings/tokens/tokens.mjs";
 import { insertToken } from "../common/db/tokens/insert.mjs";
-import { tokenType } from "common/db/tokens/types.mjs";
+import { tokenType } from "../common/db/tokens/types.mjs";
 
 
 export const handler = async (event:any, context:any) =>  {

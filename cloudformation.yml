@@ -122,9 +122,9 @@ Resources:
             Architectures: 
               - "arm64"
             Code: 
-                S3Bucket: "prod-04-2014-tasks"
-                S3Key: !Sub "/snapshots/${AWS::AccountId}/handle_daily_report-95dc760e-c9e7-4c30-90a6-71908e4136b3"
-                S3ObjectVersion: "0I6CqcVjq_ODUdQwKCmc6wEp6axrYBtU"
+                ZipFile: >
+                    def handler(event, context):
+                        return event
             MemorySize: 128
             Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/Health_data_ingress_lambda"
             Runtime: "nodejs20.x"
@@ -149,9 +149,9 @@ Resources:
             Architectures: 
               - "x86_64"
             Code: 
-                S3Bucket: "prod-04-2014-tasks"
-                S3Key: !Sub "/snapshots/${AWS::AccountId}/requestTokens-d48b81e1-f8fa-4b28-9327-bdd965cdbfc1"
-                S3ObjectVersion: "sn37Q.IftrILeQfnydtFQx7y14DA7HXp"
+                ZipFile: >
+                    def handler(event, context):
+                        return event
             MemorySize: 128
             Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${DynamoDBTable3}_requester"
             Runtime: "nodejs20.x"
@@ -170,9 +170,9 @@ Resources:
             Architectures: 
               - "arm64"
             Code: 
-                S3Bucket: "prod-04-2014-tasks"
-                S3Key: !Sub "/snapshots/${AWS::AccountId}/ouraSubscriptionHandler-8a3198ab-fe5b-4abf-b4bd-71d7b3570829"
-                S3ObjectVersion: "iW1gJ0y4bAjKzw7IMOBCSThvNQWYI9WB"
+                ZipFile: >
+                    def handler(event, context):
+                        return event
             MemorySize: 128
             Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/handle-notification"
             Runtime: "nodejs20.x"
@@ -196,9 +196,9 @@ Resources:
             Architectures: 
               - "x86_64"
             Code: 
-                S3Bucket: "prod-04-2014-tasks"
-                S3Key: !Sub "/snapshots/${AWS::AccountId}/${SNSTopic.TopicName}-17b00e68-219c-4b22-8a16-3e76546bb5f7"
-                S3ObjectVersion: "IX1GeWC1NIaKD7Aiz2Y.Fay5xnlynY.O"
+                ZipFile: >
+                    def handler(event, context):
+                        return event
             MemorySize: 128
             Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/Health_data_ingress_lambda"
             Runtime: "nodejs20.x"
@@ -221,9 +221,9 @@ Resources:
             Architectures: 
               - "x86_64"
             Code: 
-                S3Bucket: "prod-04-2014-tasks"
-                S3Key: !Sub "/snapshots/${AWS::AccountId}/test-ad0b6d97-d3f4-4371-aed4-1d41279d43ef"
-                S3ObjectVersion: "XKnQta9AEWVW.xQM7SLPUWbHePgNOyla"
+                ZipFile: >
+                    def handler(event, context):
+                        return event
             MemorySize: 128
             Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/handle-notification"
             Runtime: "nodejs20.x"
@@ -246,9 +246,9 @@ Resources:
             Architectures: 
               - "arm64"
             Code: 
-                S3Bucket: "prod-04-2014-tasks"
-                S3Key: !Sub "/snapshots/${AWS::AccountId}/openFitCompanionApiEndpoint-41d776c0-9a51-48fe-8174-e6fc8ae68b14"
-                S3ObjectVersion: "u9XaEETA_zhkJwGx.OMUwtifaPFMX1uw"
+                ZipFile: >
+                    def handler(event, context):
+                        return event
             MemorySize: 128
             Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/Health_data_ingress_lambda"
             Runtime: "nodejs20.x"

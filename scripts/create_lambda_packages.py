@@ -2,6 +2,7 @@ import subprocess
 import sys
 import os
 import shutil
+import re
 commonFolderName = "common"
 def main():
     # subprocess.run(["npx", "tsc"])
@@ -22,6 +23,12 @@ def main():
         for file in files:
             oldPath = os.path.join(curDirectory, file)
             newPath = os.path.join(curTempSubFolder, file)
+            print(oldPath)
+            with open(oldPath, "r+") as srcFile:
+                lines = srcFile.readlines()
+                srcFile.seek(0)
+                newLines = list(map(lambda x: re.sub("(\.\.)\/", "./", x), lines))
+                srcFile.writelines(newLines)
             shutil.copy(oldPath, newPath)
         shutil.copytree(commonFolder, os.path.join(curTempSubFolder, commonFolderName))
         shutil.make_archive(curTempSubFolder, "zip", curTempSubFolder)
