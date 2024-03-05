@@ -1,0 +1,1052 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+    Generator: "former2"
+Description: ""
+Parameters:
+  OpenaiApiKey: 
+    Type: String
+  VapidPrivateKey:
+    Type: String
+  WithingsClientId:
+    Type: String
+  WithingsSecret:
+    Type: String
+  OuraAccessToken:
+    Type: String
+  PersonalSecret:
+    Type: String
+  
+Resources:
+    DynamoDBTable:
+        Type: "AWS::DynamoDB::Table"
+        Properties:
+            AttributeDefinitions: 
+              - 
+                AttributeName: "Type"
+                AttributeType: "S"
+            TableName: "Goals"
+            KeySchema: 
+              - 
+                AttributeName: "Type"
+                KeyType: "HASH"
+            ProvisionedThroughput: 
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
+
+    DynamoDBTable2:
+        Type: "AWS::DynamoDB::Table"
+        Properties:
+            AttributeDefinitions: 
+              - 
+                AttributeName: "Date"
+                AttributeType: "S"
+              - 
+                AttributeName: "Type"
+                AttributeType: "S"
+            TableName: "HealthData"
+            KeySchema: 
+              - 
+                AttributeName: "Type"
+                KeyType: "HASH"
+              - 
+                AttributeName: "Date"
+                KeyType: "RANGE"
+            ProvisionedThroughput: 
+                ReadCapacityUnits: 2
+                WriteCapacityUnits: 2
+
+    DynamoDBTable3:
+        Type: "AWS::DynamoDB::Table"
+        Properties:
+            AttributeDefinitions: 
+              - 
+                AttributeName: "TokenType"
+                AttributeType: "S"
+            TableName: "tokens"
+            KeySchema: 
+              - 
+                AttributeName: "TokenType"
+                KeyType: "HASH"
+            ProvisionedThroughput: 
+                ReadCapacityUnits: 2
+                WriteCapacityUnits: 2
+
+    DynamoDBTable4:
+        Type: "AWS::DynamoDB::Table"
+        Properties:
+            AttributeDefinitions: 
+              - 
+                AttributeName: "UserID"
+                AttributeType: "N"
+            TableName: "PushSubscription"
+            KeySchema: 
+              - 
+                AttributeName: "UserID"
+                KeyType: "HASH"
+            ProvisionedThroughput: 
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
+
+    DynamoDBTable5:
+        Type: "AWS::DynamoDB::Table"
+        Properties:
+            AttributeDefinitions: 
+              - 
+                AttributeName: "Type"
+                AttributeType: "S"
+              - 
+                AttributeName: "UserID"
+                AttributeType: "N"
+            TableName: "UserData"
+            KeySchema: 
+              - 
+                AttributeName: "UserID"
+                KeyType: "HASH"
+              - 
+                AttributeName: "Type"
+                KeyType: "RANGE"
+            ProvisionedThroughput: 
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
+
+    LambdaFunction:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: ""
+            Environment: 
+                Variables: 
+                    OPENAI_API_KEY: !Ref OpenaiApiKey
+                    VAPID_PRIVATE_KEY: !Ref VapidPrivateKey
+            FunctionName: "handle_daily_report"
+            Handler: "index.handler"
+            Architectures: 
+              - "arm64"
+            Code: 
+                S3Bucket: "prod-04-2014-tasks"
+                S3Key: !Sub "/snapshots/${AWS::AccountId}/handle_daily_report-95dc760e-c9e7-4c30-90a6-71908e4136b3"
+                S3ObjectVersion: "0I6CqcVjq_ODUdQwKCmc6wEp6axrYBtU"
+            MemorySize: 128
+            Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/Health_data_ingress_lambda"
+            Runtime: "nodejs20.x"
+            Timeout: 10
+            TracingConfig: 
+                Mode: "PassThrough"
+            Layers: 
+              - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:depend:4"
+            EphemeralStorage: 
+                Size: 512
+
+    LambdaFunction2:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: ""
+            Environment: 
+                Variables: 
+                    WITHINGS_CLIENT_ID: !Ref WithingsClientId
+                    WITHINGS_SECRET: !Ref WithingsSecret
+            FunctionName: "requestTokens"
+            Handler: "index.handler"
+            Architectures: 
+              - "x86_64"
+            Code: 
+                S3Bucket: "prod-04-2014-tasks"
+                S3Key: !Sub "/snapshots/${AWS::AccountId}/requestTokens-d48b81e1-f8fa-4b28-9327-bdd965cdbfc1"
+                S3ObjectVersion: "sn37Q.IftrILeQfnydtFQx7y14DA7HXp"
+            MemorySize: 128
+            Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${DynamoDBTable3}_requester"
+            Runtime: "nodejs20.x"
+            Timeout: 20
+            TracingConfig: 
+                Mode: "PassThrough"
+            EphemeralStorage: 
+                Size: 512
+
+    LambdaFunction3:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: ""
+            FunctionName: "ouraSubscriptionHandler"
+            Handler: "index.handler"
+            Architectures: 
+              - "arm64"
+            Code: 
+                S3Bucket: "prod-04-2014-tasks"
+                S3Key: !Sub "/snapshots/${AWS::AccountId}/ouraSubscriptionHandler-8a3198ab-fe5b-4abf-b4bd-71d7b3570829"
+                S3ObjectVersion: "iW1gJ0y4bAjKzw7IMOBCSThvNQWYI9WB"
+            MemorySize: 128
+            Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/handle-notification"
+            Runtime: "nodejs20.x"
+            Timeout: 10
+            TracingConfig: 
+                Mode: "PassThrough"
+            EphemeralStorage: 
+                Size: 512
+
+    LambdaFunction4:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: ""
+            Environment: 
+                Variables: 
+                    WITHINGS_CLIENT_ID: !Ref WithingsClientId
+                    OURA_ACCESS_TOKEN: !Ref OuraAccessToken
+                    WITHINGS_SECRET: !Ref WithingsSecret
+            FunctionName: !GetAtt SNSTopic.TopicName
+            Handler: "index.handler"
+            Architectures: 
+              - "x86_64"
+            Code: 
+                S3Bucket: "prod-04-2014-tasks"
+                S3Key: !Sub "/snapshots/${AWS::AccountId}/${SNSTopic.TopicName}-17b00e68-219c-4b22-8a16-3e76546bb5f7"
+                S3ObjectVersion: "IX1GeWC1NIaKD7Aiz2Y.Fay5xnlynY.O"
+            MemorySize: 128
+            Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/Health_data_ingress_lambda"
+            Runtime: "nodejs20.x"
+            Timeout: 15
+            TracingConfig: 
+                Mode: "PassThrough"
+            EphemeralStorage: 
+                Size: 512
+
+    LambdaFunction5:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: ""
+            Environment: 
+                Variables: 
+                    WITHINGS_CLIENT_ID: !Ref WithingsClientId
+                    WITHINGS_SECRET: !Ref WithingsSecret
+            FunctionName: "test"
+            Handler: "index.handler"
+            Architectures: 
+              - "x86_64"
+            Code: 
+                S3Bucket: "prod-04-2014-tasks"
+                S3Key: !Sub "/snapshots/${AWS::AccountId}/test-ad0b6d97-d3f4-4371-aed4-1d41279d43ef"
+                S3ObjectVersion: "XKnQta9AEWVW.xQM7SLPUWbHePgNOyla"
+            MemorySize: 128
+            Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/handle-notification"
+            Runtime: "nodejs20.x"
+            Timeout: 5
+            TracingConfig: 
+                Mode: "PassThrough"
+            EphemeralStorage: 
+                Size: 512
+
+    LambdaFunction6:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: ""
+            Environment: 
+                Variables: 
+                    OPENAI_API_KEY: !Ref OpenaiApiKey
+                    PERSONAL_SECRET: !Ref PersonalSecret
+            FunctionName: "openFitCompanionApiEndpoint"
+            Handler: "index.handler"
+            Architectures: 
+              - "arm64"
+            Code: 
+                S3Bucket: "prod-04-2014-tasks"
+                S3Key: !Sub "/snapshots/${AWS::AccountId}/openFitCompanionApiEndpoint-41d776c0-9a51-48fe-8174-e6fc8ae68b14"
+                S3ObjectVersion: "u9XaEETA_zhkJwGx.OMUwtifaPFMX1uw"
+            MemorySize: 128
+            Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/Health_data_ingress_lambda"
+            Runtime: "nodejs20.x"
+            Timeout: 240
+            TracingConfig: 
+                Mode: "PassThrough"
+            Layers: 
+              - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:depend:4"
+            EphemeralStorage: 
+                Size: 512
+
+    SNSTopic:
+        Type: "AWS::SNS::Topic"
+        Properties:
+            DisplayName: ""
+            TopicName: "processNotification"
+
+    SQSQueue:
+        Type: "AWS::SQS::Queue"
+        Properties:
+            DelaySeconds: "0"
+            MaximumMessageSize: "262144"
+            MessageRetentionPeriod: "345600"
+            ReceiveMessageWaitTimeSeconds: "0"
+            VisibilityTimeout: "30"
+            QueueName: "notifications"
+
+    SNSSubscription:
+        Type: "AWS::SNS::Subscription"
+        Properties:
+            TopicArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${LambdaFunction4}"
+            Endpoint: !GetAtt LambdaFunction4.Arn
+            Protocol: "lambda"
+            Region: !Ref AWS::Region
+            RedrivePolicy: !Sub "{\"deadLetterTargetArn\":\"${SQSQueue}\"}"
+
+    SNSTopicPolicy:
+        Type: "AWS::SNS::TopicPolicy"
+        Properties:
+            PolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:Publish\",\"SNS:RemovePermission\",\"SNS:SetTopicAttributes\",\"SNS:DeleteTopic\",\"SNS:ListSubscriptionsByTopic\",\"SNS:GetTopicAttributes\",\"SNS:AddPermission\",\"SNS:Subscribe\"],\"Resource\":\"arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${LambdaFunction4}\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"${AWS::AccountId}\"}}}]}"
+            Topics: 
+              - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${LambdaFunction4}"
+
+    LambdaLayerVersion:
+        Type: "AWS::Lambda::LayerVersion"
+        Properties:
+            Description: ""
+            CompatibleRuntimes: 
+              - "nodejs20.x"
+            LayerName: "depend"
+            Content: 
+                S3Bucket: "prod-04-2014-layers"
+                S3Key: !Sub "/snapshots/${AWS::AccountId}/depend-1e3ca750-7911-413b-ab23-506f8eabb027"
+
+    LambdaUrl:
+        Type: "AWS::Lambda::Url"
+        Properties:
+            TargetFunctionArn: !GetAtt LambdaFunction5.Arn
+            AuthType: "NONE"
+            Cors: 
+                AllowCredentials: false
+                AllowOrigins: 
+                  - "*"
+
+    LambdaUrl2:
+        Type: "AWS::Lambda::Url"
+        Properties:
+            TargetFunctionArn: !GetAtt LambdaFunction3.Arn
+            AuthType: "NONE"
+
+    LambdaUrl3:
+        Type: "AWS::Lambda::Url"
+        Properties:
+            TargetFunctionArn: !GetAtt LambdaFunction6.Arn
+            AuthType: "NONE"
+            Cors: 
+                AllowCredentials: true
+                AllowHeaders: 
+                  - "authorization"
+                AllowMethods: 
+                  - "*"
+                AllowOrigins: 
+                  - "*"
+
+    LambdaUrl4:
+        Type: "AWS::Lambda::Url"
+        Properties:
+            TargetFunctionArn: !GetAtt LambdaFunction2.Arn
+            AuthType: "NONE"
+            Cors: 
+                AllowCredentials: false
+                AllowOrigins: 
+                  - "*"
+
+    LambdaPermission:
+        Type: "AWS::Lambda::Permission"
+        Properties:
+            Action: "lambda:InvokeFunctionUrl"
+            FunctionName: !GetAtt LambdaFunction5.Arn
+            Principal: "*"
+
+    LambdaPermission2:
+        Type: "AWS::Lambda::Permission"
+        Properties:
+            Action: "lambda:InvokeFunctionUrl"
+            FunctionName: !GetAtt LambdaFunction2.Arn
+            Principal: "*"
+
+    LambdaPermission3:
+        Type: "AWS::Lambda::Permission"
+        Properties:
+            Action: "lambda:InvokeFunctionUrl"
+            FunctionName: !GetAtt LambdaFunction3.Arn
+            Principal: "*"
+
+    LambdaPermission4:
+        Type: "AWS::Lambda::Permission"
+        Properties:
+            Action: "lambda:InvokeFunction"
+            FunctionName: !GetAtt LambdaFunction4.Arn
+            Principal: "sns.amazonaws.com"
+            SourceArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${LambdaFunction4}"
+
+    LambdaPermission5:
+        Type: "AWS::Lambda::Permission"
+        Properties:
+            Action: "lambda:InvokeFunctionUrl"
+            FunctionName: !GetAtt LambdaFunction6.Arn
+            Principal: "*"
+
+    SchedulerSchedule:
+        Type: "AWS::Scheduler::Schedule"
+        Properties:
+            Name: "DailyHealthReport"
+            Description: ""
+            State: "ENABLED"
+            GroupName: "default"
+            ScheduleExpression: "cron(0 22 * * ? *)"
+            ScheduleExpressionTimezone: "Europe/London"
+            FlexibleTimeWindow: 
+                Mode: "OFF"
+            Target: 
+                Arn: !GetAtt LambdaFunction.Arn
+                Input: |
+                    {
+                      "reportType": "daily"
+                    }
+                RetryPolicy: 
+                    MaximumEventAgeInSeconds: 3600
+                    MaximumRetryAttempts: 2
+                RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_65d524d34d"
+
+    SchedulerSchedule2:
+        Type: "AWS::Scheduler::Schedule"
+        Properties:
+            Name: "activity_early_evening"
+            Description: ""
+            State: "DISABLED"
+            GroupName: "default"
+            ScheduleExpression: "cron(00 21 * * ? *)"
+            ScheduleExpressionTimezone: "Europe/London"
+            FlexibleTimeWindow: 
+                Mode: "OFF"
+            Target: 
+                Arn: !GetAtt LambdaFunction.Arn
+                Input: |
+                    {
+                        "reportType": "activity",
+                        "timeOfDay": "early evening"
+                    }
+                RetryPolicy: 
+                    MaximumEventAgeInSeconds: 86400
+                    MaximumRetryAttempts: 0
+                RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_65d524d34d"
+
+    SchedulerSchedule3:
+        Type: "AWS::Scheduler::Schedule"
+        Properties:
+            Name: "activity_late_afternoon"
+            Description: ""
+            State: "DISABLED"
+            GroupName: "default"
+            ScheduleExpression: "cron(30 17 * * ? *)"
+            ScheduleExpressionTimezone: "Europe/London"
+            FlexibleTimeWindow: 
+                Mode: "OFF"
+            Target: 
+                Arn: !GetAtt LambdaFunction.Arn
+                Input: |
+                    {
+                        "reportType": "activity",
+                        "timeOfDay": "late afternoon"
+                    }
+                RetryPolicy: 
+                    MaximumEventAgeInSeconds: 86400
+                    MaximumRetryAttempts: 0
+                RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_65d524d34d"
+
+    SchedulerSchedule4:
+        Type: "AWS::Scheduler::Schedule"
+        Properties:
+            Name: "activity_midday"
+            Description: ""
+            State: "DISABLED"
+            GroupName: "default"
+            ScheduleExpression: "cron(00 13 * * ? *)"
+            ScheduleExpressionTimezone: "Europe/London"
+            FlexibleTimeWindow: 
+                Mode: "OFF"
+            Target: 
+                Arn: !GetAtt LambdaFunction.Arn
+                Input: |
+                    {
+                        "ReportType": "activity",
+                        "timeOfDay": "midday"
+                    }
+                RetryPolicy: 
+                    MaximumEventAgeInSeconds: 86400
+                    MaximumRetryAttempts: 0
+                RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_65d524d34d"
+
+    SchedulerSchedule5:
+        Type: "AWS::Scheduler::Schedule"
+        Properties:
+            Name: "activity_morning"
+            Description: ""
+            State: "DISABLED"
+            GroupName: "default"
+            ScheduleExpression: "cron(00 10 * * ? *)"
+            ScheduleExpressionTimezone: "Europe/London"
+            FlexibleTimeWindow: 
+                Mode: "OFF"
+            Target: 
+                Arn: !GetAtt LambdaFunction.Arn
+                Input: |
+                    {
+                        "reportType": "activity",
+                        "timeOfDay": "morning"
+                    }
+                RetryPolicy: 
+                    MaximumEventAgeInSeconds: 86400
+                    MaximumRetryAttempts: 0
+                RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/Amazon_EventBridge_Scheduler_LAMBDA_65d524d34d"
+
+    S3Bucket:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: !Sub "${S3Bucket2}-front"
+            BucketEncryption: 
+                ServerSideEncryptionConfiguration: 
+                  - 
+                    ServerSideEncryptionByDefault: 
+                        SSEAlgorithm: "AES256"
+                    BucketKeyEnabled: true
+            OwnershipControls: 
+                Rules: 
+                  - 
+                    ObjectOwnership: "BucketOwnerEnforced"
+            PublicAccessBlockConfiguration: 
+                BlockPublicAcls: false
+                BlockPublicPolicy: false
+                IgnorePublicAcls: false
+                RestrictPublicBuckets: false
+
+    S3Bucket2:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: "open-fit-companion"
+            BucketEncryption: 
+                ServerSideEncryptionConfiguration: 
+                  - 
+                    ServerSideEncryptionByDefault: 
+                        SSEAlgorithm: "AES256"
+                    BucketKeyEnabled: true
+            LifecycleConfiguration: 
+                Rules: 
+                  - 
+                    Id: "DeleteAfterXMins"
+                    Status: "Enabled"
+                    ExpirationInDays: 1
+            OwnershipControls: 
+                Rules: 
+                  - 
+                    ObjectOwnership: "BucketOwnerEnforced"
+            PublicAccessBlockConfiguration: 
+                BlockPublicAcls: true
+                BlockPublicPolicy: true
+                IgnorePublicAcls: true
+                RestrictPublicBuckets: true
+
+    S3BucketPolicy:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref S3Bucket
+            PolicyDocument: 
+                Version: "2012-10-17"
+                Statement: 
+                  - 
+                    Sid: "Statement1"
+                    Effect: "Allow"
+                    Principal: "*"
+                    Action: "s3:GetObject"
+                    Resource: !Sub "arn:aws:s3:::${S3Bucket}/*"
+
+    IAMPolicy:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: !Sub |
+                {
+                	"Version": "2012-10-17",
+                	"Statement": [
+                		{
+                			"Sid": "VisualEditor0",
+                			"Effect": "Allow",
+                			"Action": "sns:Publish",
+                			"Resource": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${LambdaFunction4}"
+                		}
+                	]
+                }
+            Roles: 
+              - !Ref IAMRole8
+            PolicyName: "publishToProcessingSns"
+
+    IAMPolicy2:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"kms:Decrypt\"],\"Resource\":\"*\",\"Effect\":\"Deny\",\"Sid\":\"DontReadSecrets\"}]}"
+            Roles: 
+              - !Ref IAMRole6
+            PolicyName: "LookupRolePolicy"
+
+    IAMPolicy3:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: |
+                {
+                	"Version": "2012-10-17",
+                	"Statement": [
+                		{
+                			"Sid": "VisualEditor0",
+                			"Effect": "Allow",
+                			"Action": "dynamodb:*",
+                			"Resource": "*"
+                		}
+                	]
+                }
+            Roles: 
+              - !Ref IAMRole10
+            PolicyName: "db-allow-all"
+
+    IAMPolicy4:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: !Sub |
+                {
+                	"Version": "2012-10-17",
+                	"Statement": [
+                		{
+                			"Sid": "VisualEditor0",
+                			"Effect": "Allow",
+                			"Action": "dynamodb:PutItem",
+                			"Resource": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDBTable2}"
+                		}
+                	]
+                }
+            Roles: 
+              - !Ref IAMRole10
+            PolicyName: "DB_health_data_putItem"
+
+    IAMPolicy5:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: !Sub |
+                {
+                	"Version": "2012-10-17",
+                	"Statement": [
+                		{
+                			"Sid": "VisualEditor0",
+                			"Effect": "Allow",
+                			"Action": "dynamodb:GetItem",
+                			"Resource": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDBTable2}"
+                		}
+                	]
+                }
+            Roles: 
+              - !Ref IAMRole10
+            PolicyName: "healthGetItem"
+
+    IAMPolicy6:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"logs:PutMetricFilter\",\"logs:PutRetentionPolicy\"],\"Resource\":[\"*\"]}]}"
+            Roles: 
+              - !Sub "${IAMRole14}_1705069068762"
+            PolicyName: !Sub "${IAMRole14}_1705069068762_1705069074007"
+
+    IAMPolicy7:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"logs:PutMetricFilter\",\"logs:PutRetentionPolicy\"],\"Resource\":[\"*\"]}]}"
+            Roles: 
+              - !Ref IAMRole16
+            PolicyName: !Sub "${IAMRole16}_1705069074007"
+
+    IAMPolicy8:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"logs:PutMetricFilter\",\"logs:PutRetentionPolicy\"],\"Resource\":[\"*\"]}]}"
+            Roles: 
+              - !Ref IAMRole14
+            PolicyName: !Sub "${IAMRole14}_1701362330952"
+
+    IAMPolicy9:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"logs:PutMetricFilter\",\"logs:PutRetentionPolicy\"],\"Resource\":[\"*\"]}]}"
+            Roles: 
+              - !Ref IAMRole19
+            PolicyName: !Sub "${IAMRole19}_1701362330952"
+
+    IAMPolicy10:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: |
+                {
+                	"Version": "2012-10-17",
+                	"Statement": [
+                		{
+                			"Sid": "VisualEditor0",
+                			"Effect": "Allow",
+                			"Action": "dynamodb:*",
+                			"Resource": "*"
+                		}
+                	]
+                }
+            Roles: 
+              - !Sub "${DynamoDBTable3}_requester"
+            PolicyName: "full_dynamodb"
+
+    IAMManagedPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "Amazon-EventBridge-Scheduler-Execution-Policy-b7f17d87-c3ff-40f3-aed2-5650f3929312"
+            Path: "/service-role/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "lambda:InvokeFunction"
+                            ],
+                            "Resource": [
+                                "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunction}:*",
+                                "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunction}"
+                            ]
+                        }
+                    ]
+                }
+
+    IAMManagedPolicy2:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "AWSLambdaBasicExecutionRole-519d3375-9cd3-4a7d-b362-cfa45ce4fed0"
+            Path: "/service-role/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "logs:CreateLogGroup",
+                            "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Resource": [
+                                "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/handleNotification:*"
+                            ]
+                        }
+                    ]
+                }
+
+    IAMManagedPolicy3:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "AWSLambdaBasicExecutionRole-f23c4f31-3a9b-4042-9552-ae90cc81988f"
+            Path: "/service-role/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "logs:CreateLogGroup",
+                            "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Resource": [
+                                "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunction4}:*"
+                            ]
+                        }
+                    ]
+                }
+
+    IAMManagedPolicy4:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "AWSLambdaBasicExecutionRole-83d398bc-085b-4c22-b98e-cae8dbd7f19e"
+            Path: "/service-role/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "logs:CreateLogGroup",
+                            "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Resource": [
+                                "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunction6}:*"
+                            ]
+                        }
+                    ]
+                }
+
+    IAMManagedPolicy5:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "AWSLambdaBasicExecutionRole-685c4795-b244-422e-9e96-19afab2852ef"
+            Path: "/service-role/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "logs:CreateLogGroup",
+                            "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Resource": [
+                                "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunction3}:*"
+                            ]
+                        }
+                    ]
+                }
+
+    IAMManagedPolicy6:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "AWSLambdaBasicExecutionRole-90cf149a-9006-483c-b6cf-7a91f29a4a83"
+            Path: "/service-role/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "logs:CreateLogGroup",
+                            "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Resource": [
+                                "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaFunction5}:*"
+                            ]
+                        }
+                    ]
+                }
+
+    IAMRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: "Amazon_EventBridge_Scheduler_LAMBDA_65d524d34d"
+            AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"scheduler.amazonaws.com\"},\"Action\":\"sts:AssumeRole\",\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"${AWS::AccountId}\"}}}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy
+
+    IAMRole2:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudformation.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/AdministratorAccess"
+            Description: ""
+
+    IAMRole3:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}"
+            AssumeRolePolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            Description: ""
+            Tags: 
+              - 
+                Key: "aws-cdk:bootstrap-role"
+                Value: "deploy"
+
+    IAMRole4:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+            AssumeRolePolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            Description: ""
+            Tags: 
+              - 
+                Key: "aws-cdk:bootstrap-role"
+                Value: "image-publishing"
+
+    IAMRole5:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+            AssumeRolePolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            Description: ""
+            Tags: 
+              - 
+                Key: "aws-cdk:bootstrap-role"
+                Value: "file-publishing"
+
+    IAMRole6:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
+            AssumeRolePolicyDocument: !Sub "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/ReadOnlyAccess"
+            Description: ""
+            Tags: 
+              - 
+                Key: "aws-cdk:bootstrap-role"
+                Value: "lookup"
+
+    IAMRole7:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: "Former2"
+            AssumeRolePolicyDocument: !Sub "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::${AWS::AccountId}:root\"},\"Action\":\"sts:AssumeRole\",\"Condition\":{}}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/ReadOnlyAccess"
+            Description: ""
+
+    IAMRole8:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: "handle-notification"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            Description: "Allows Lambda functions to call AWS services on your behalf."
+
+    IAMRole9:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: "handleNotification-role-6g8q552z"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy2
+
+    IAMRole10:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: "Health_data_ingress_lambda"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+            Description: "Allows Lambda functions to call AWS services on your behalf."
+
+    IAMRole11:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: !Sub "${LambdaFunction6}-role-k543qec0"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy4
+
+    IAMRole12:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: !Sub "${LambdaFunction3}-role-py1biqhq"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy5
+
+    IAMRole13:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: !Sub "${LambdaFunction4}-role-xo04yixz"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy3
+
+    IAMRole14:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: "SNSFailureFeedback"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"sns.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            Description: "Provides write access to AWS Services and Resources"
+
+    IAMRole15:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "${IAMRole14}_1705069068762"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"sns.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            Description: "Provides write access to AWS Services and Resources"
+
+    IAMRole16:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "${IAMRole19}_1705069068762"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"sns.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            Description: "Provides write access to AWS Services and Resources"
+
+    IAMRole17:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: !Sub "${LambdaFunction5}-role-31bt9ucn"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy6
+
+    IAMRole18:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "${DynamoDBTable3}_requester"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            Description: "Allows Lambda functions to call AWS services on your behalf."
+
+    IAMRole19:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: "SNSSuccessFeedback"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"sns.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            Description: "Provides write access to AWS Services and Resources"
