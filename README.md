@@ -14,7 +14,8 @@ Open-source full-stack application to synchronize with health data provider to a
         - External: Go to Respective websites and follow instructions to get API tokens: OpenAI API token, Oura personal access token, Withings client id and secret
         - Internal: Personal Secret: any string, go to any online password generator, Vapid: https://github.com/web-push-libs/web-push?tab=readme-ov-file#command-line
 4. Run upload_code.ps1 command
-5. Go to Amplify (https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1#/). 
+5. Upload Lambda function code. Go to each Lambda function. Upload appropriate .zip file from temp folder
+6. Go to Amplify (https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1#/). 
     - Go to openFitCompanion
     - Click on link under "Domain"
     - Fill in API SECRET field with Personal Secret you generated for cloudformation parameter
