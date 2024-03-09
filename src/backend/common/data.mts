@@ -1,9 +1,21 @@
+import { getAdapter } from "./adapter.mjs"
 import { insertHealthData } from "./db/healtData/insert.mjs"
 import { selectHealthData } from "./db/healtData/select.mjs"
 import { HealthDataType } from "./db/healtData/types.mjs"
 import { HealthData, Provider } from "./types.mjs"
+import { toShortISODate } from "./utilities.mjs"
 
 const providers = [Provider.Oura, Provider.Withings]
+export const refreshAll = async (date: Date) => {
+    await Promise.allSettled(providers.map(async (provider) => {
+        const adapter = getAdapter(provider);
+        const activity = await adapter.getDailyAggregatedActivity(toShortISODate(date))
+        const sleep = await adapter.getDailySleepSummary(toShortISODate(date))
+        await insertHealthData(activity)
+    }))
+    await unify(toShortISODate(date), HealthDataType.Activity)
+    await unify(toShortISODate(date), HealthDataType.Sleep)
+}
 export const unify = async (date: string, type: HealthDataType) => {
     let records: any[] = await Promise.all(providers.map((provider) => {
         try {

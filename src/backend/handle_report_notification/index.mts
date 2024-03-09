@@ -3,11 +3,13 @@ import { createActivityReminder, generateDailyReport, generateRefreshReminder } 
 import { sendPushNotification } from "../common/webpush.mjs"
 import { toShortISODate } from "../common/utilities.mjs"
 import { ReportType } from "../common/types.mjs"
+import { refreshAll } from "../common/data.mjs"
 const baseUrl = 'https://openfitcompanion.xyz'
 export const handler = async (ev: any) => {
     const type = ev.reportType
     switch (type){
         case (ReportType.DAILY): {
+            await refreshAll(new Date())
             const {title, body} = await generateDailyReport()
             console.log(body)
             const subscription = await selectPushSubscription()
@@ -17,6 +19,7 @@ export const handler = async (ev: any) => {
             break;
         }
         case (ReportType.ACTIVITY): {
+            await refreshAll(new Date())
             const timeOfDay = ev.timeOfDay
             const {title, body} = await createActivityReminder(timeOfDay)
             const subscription = await selectPushSubscription()

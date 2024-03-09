@@ -19,7 +19,7 @@ export const handler = async (
 };
 
 
-const processNotification = async (obj: any) => {
+export const processNotification = async (obj: any) => {
     const provider = obj.provider as Provider
     const adapter = getAdapter(provider);
     const data = await adapter.processNotification(obj);
