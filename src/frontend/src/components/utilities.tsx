@@ -9,6 +9,9 @@ export const getDateOffset = (startDate: Date, offset: number) => {
     tempDate.setDate(tempDate.getDate() + offset)
     return tempDate
 }
+export function getDayOfWeek(date: Date){
+    return new Date(date).toLocaleString("en", { weekday: "long" })
+}
 export function getMonday( date: Date ) {
     var tempDate = structuredClone(date)
     var day = tempDate.getDay() || 7;  
