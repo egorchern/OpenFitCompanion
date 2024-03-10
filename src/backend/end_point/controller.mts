@@ -4,8 +4,6 @@ import { HealthDataType } from "../common/db/healtData/types.mjs";
 import { HealthData, Provider } from "../common/types.mjs";
 import { insertPushSubscription } from "../common/db/pushSubscription/insert.mjs";
 import { exportAllHealthData } from "../common/export.mjs";
-import { getGoal } from "../common/db/goals/select.mjs";
-import { GoalType } from "../common/db/goals/types.mjs";
 import { selectAIWorkout, selectUserData } from "../common/db/userData/select.mjs";
 import { UserDataType } from "../common/db/userData/types.mjs";
 import { insertUserData } from "../common/db/userData/insert.mjs";
@@ -35,8 +33,14 @@ export const handleRequest = async (method: string, path: string, event: any) =>
           }
         }
         case ("/goals"): {
-          const goalType = event?.queryStringParameters?.goalType as GoalType
-          const data = await getGoal(goalType)
+          const goalType = event?.queryStringParameters?.goalType
+          const temp = (await selectUserData(UserDataType.Profile))
+          if(!temp){
+            return {
+              statusCode: 404
+            }
+          }
+          const data = temp[goalType]
           return {
             statusCode: 200,
             body: JSON.stringify(data)

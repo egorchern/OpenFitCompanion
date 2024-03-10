@@ -1,4 +1,4 @@
 {
-    "TableName": "PushSubscription",
+    "TableName": "UserData",
     "LocalDbEndpoint": "http://localhost:8000"
 }

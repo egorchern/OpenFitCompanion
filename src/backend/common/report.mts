@@ -1,8 +1,8 @@
-import { getGoal } from "./db/goals/select.mjs";
-import { Goal, GoalType } from "./db/goals/types.mjs";
 import { queryHealthData } from "./db/healtData/query.mjs";
 import { selectHealthData } from "./db/healtData/select.mjs";
 import { HealthDataType } from "./db/healtData/types.mjs";
+import { selectUserData } from "./db/userData/select.mjs";
+import { UserDataType } from "./db/userData/types.mjs";
 import { ActivityData, Provider, SleepData } from "./types.mjs";
 import { getMonday, toShortISODate } from "./utilities.mjs";
 const getScoreEmoji = (score: number) => {
@@ -36,17 +36,7 @@ const intensityMETWeights = {
     intenseActivity: 5.5
 }
 
-const getStepsString = async (activityToday: ActivityData) => {
-    const stepsGoal = (await getGoal(GoalType.STEPS)).Value
-    const stepsToday = activityToday.steps;
-    const stepsFeedback = stepsToday < stepsGoal ?
-        `${stepsGoal - stepsToday} below goal` :
-        `${stepsToday - stepsGoal} above goal`
-    const stepsScore = Math.floor((stepsToday / stepsGoal) * 100)
-    const stepsString = `
-    Steps: ${getScoreEmoji(stepsScore)}: ${stepsFeedback} - ${stepsScore}%`
-    return stepsString
-}
+
 
 const calcActivity = (activityData: ActivityData) => {
     const METDone = Math.floor(
@@ -60,7 +50,7 @@ const calcActivity = (activityData: ActivityData) => {
 const getActivityVolumeString = async (curDate: string) => {
     const startDate = getMonday(new Date(curDate))
     const activitySinceMonday = (await queryHealthData(toShortISODate(startDate), curDate, HealthDataType.Activity, Provider.Unified)) as ActivityData[]
-    const weeklyActivityGoal = (await getGoal(GoalType.WEEKLY_ACTIVITY)).Value
+    const weeklyActivityGoal = (await selectUserData(UserDataType.Profile))?.Value
     const activityDonePastWeek = activitySinceMonday.map((curElement) => {
         return calcActivity(curElement)
     })

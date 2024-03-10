@@ -15,6 +15,7 @@ export const insertPushSubscription = async (data: PushSubscription) => {
     Object.keys(copy).forEach((key: any) => copy[key] === undefined ? delete copy[key] : {});
     copy.CreatedAt = getTimestamp();
     copy.UserID = 1
+    copy.Type = "pushSubscription"
     const putTokenCommand = new PutCommand({
         TableName: config.TableName,
         Item: copy,

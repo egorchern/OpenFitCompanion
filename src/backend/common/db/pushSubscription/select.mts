@@ -13,7 +13,8 @@ export const selectPushSubscription = async (): Promise<PushSubscription> => {
     const command = new GetCommand({
         TableName: config.TableName,
         Key: {
-            UserID: 1
+            UserID: 1,
+            Type: "pushSubscription"
         },
         
     })
