@@ -18,7 +18,7 @@ function DailyActivity(props: DailyActivityProps) {
     const { curDate, startDate } = props
     let activitySinceMonday = (QueryHealthData(toShortISODate(startDate), toShortISODate(curDate), HealthDataType.Activity)).data as any[]
 
-    const weeklyActivityGoal = GetGoal(GoalType.WEEKLY_ACTIVITY)?.data?.Value
+    const weeklyActivityGoal = GetGoal(GoalType.WEEKLY_ACTIVITY)?.data
     const activityString = useMemo(() => {
         if (!activitySinceMonday || !weeklyActivityGoal) {
             return ""

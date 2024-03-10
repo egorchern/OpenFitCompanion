@@ -11,7 +11,7 @@ export default function Workout() {
     const {date, timeOfDay} = useLoaderData() as any
     const temp = GetDayWorkout(new Date(date), timeOfDay)
     const data = temp.data as ActivityItem[]
-    const weeklyActivityGoal = GetGoal(GoalType.WEEKLY_ACTIVITY)?.data?.Value
+    const weeklyActivityGoal = GetGoal(GoalType.WEEKLY_ACTIVITY)?.data
     const monday = getMonday(new Date(date))
     const activitySinceMonday = (QueryHealthData(toShortISODate(monday), date, HealthDataType.Activity)).data as any[]
 

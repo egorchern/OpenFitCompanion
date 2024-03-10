@@ -50,7 +50,7 @@ const calcActivity = (activityData: ActivityData) => {
 const getActivityVolumeString = async (curDate: string) => {
     const startDate = getMonday(new Date(curDate))
     const activitySinceMonday = (await queryHealthData(toShortISODate(startDate), curDate, HealthDataType.Activity, Provider.Unified)) as ActivityData[]
-    const weeklyActivityGoal = (await selectUserData(UserDataType.Profile))?.Value
+    const weeklyActivityGoal = (await selectUserData(UserDataType.Profile))?.MET_Target
     const activityDonePastWeek = activitySinceMonday.map((curElement) => {
         return calcActivity(curElement)
     })
@@ -139,11 +139,7 @@ const getSleepBody = async () => {
     return reportBody
 }
 export const generateDailyReport = async () => {
-    const activityPortion = await getActivityBody()
-    const sleepPortion = await getSleepBody()
-    const reportBody = `${activityPortion}
-    ${sleepPortion}
-    Click for more detailed report`
+    const reportBody = `Click for daily report`
     return {
         title: "Daily Health Report",
         body: reportBody

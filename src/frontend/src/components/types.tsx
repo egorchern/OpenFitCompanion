@@ -22,7 +22,7 @@ export interface ActivityItem {
 }
 export const enum GoalType {
     STEPS = 'steps',
-    WEEKLY_ACTIVITY = 'activity',
+    WEEKLY_ACTIVITY = 'MET_Target',
     SLEEP_DURATION = 'sleepDuration',
     SLEEP_DEPTH = 'sleepDepth'
 }
