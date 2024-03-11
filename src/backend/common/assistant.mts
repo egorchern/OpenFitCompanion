@@ -152,7 +152,7 @@ export const getDaysFeedback = async (date: Date) => {
         return dbData.feedback
     }
     const prompt = `Provide feedback for a single day: ${toShortISODate(date)}. First workout the day of the week for that day. Compare with past days of this week. Highlight 2 things I have done well and 2  things that need improvement. 
-    Be specific and mention specific meassurements. Refer to my activity and sleep data. Don't mention anything about excluded activities. Use recommendations from health organisations such as WHO as reference.`
+    Be specific and mention specific measurements. Refer to my activity and sleep data. Don't mention anything about excluded activities. Use recommendations from health organisations such as WHO as reference.`
     const run = await executePrompt(prompt, true)
     await sleep(10000)
     const messages = await getThreadMessages()

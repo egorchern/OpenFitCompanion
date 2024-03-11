@@ -69,8 +69,8 @@ export default function AggregateActivity(props: AggregateActivityProps) {
                 interval={getDateDiffInDays(startDate, endDate)}
                 propertyName={"METMinutes"} />
             <div>
-                <p>Mean: {stats?.mean}</p>
-                <p>Standard Deviation (Consistency): {stats?.stdev}</p>
+                <p>Average: {stats?.mean}</p>
+                <p>Consistency (lower is better): {stats?.stdev}</p>
             </div>
 
 

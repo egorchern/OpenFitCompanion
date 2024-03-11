@@ -13,7 +13,7 @@ export default function AIFeedback(props: AIFeedbackProps) {
             {
                 data ? (
                     <Markdown>
-                        {data?.feedback}
+                        {data}
                     </Markdown>
                 ): null
             }
