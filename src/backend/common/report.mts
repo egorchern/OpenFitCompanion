@@ -145,3 +145,11 @@ export const generateDailyReport = async () => {
         body: reportBody
     }
 }
+
+export const generateWeeklyReport = async () => {
+    const reportBody = `Click for weekly report`
+    return {
+        title: "Weekly Health Report",
+        body: reportBody
+    }
+}

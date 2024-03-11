@@ -128,7 +128,7 @@ export const getDaysWorkoutPlan = async (date: Date) => {
     In exerciseNotes include detailed description of how to perform the exercise, as well as that exercise's benefits. 
     Don't create groups of exercises as a single item, instead write them all as a separate exercise.
     Please include some activities for all values of exerciseStartAtTime, however the majority of activities should be scheduled in late afternoon. Make sure to use userData.json file to tailor your response. First, work out the day of the week, then calculate if the day is a gym-going day (if it is in profile's gym-going days), then create the activity plan accordingly. 
-    Include intense strength training exercises that use equipment on gym going days at late afternoon. Otherwise, don't include exercises that need equipment. Prioritize variety of activities. Make sure total MET minutes for the day are not too high considering the weekly MET target. 
+    Include intense strength training exercises that use equipment on gym going days at late afternoon. Otherwise, create a mix of exercises that don't need equipment and exercises that use equipment that the user has at home. Prioritize variety of activities. Make sure total MET minutes for the day are not too high considering the weekly MET target. 
     Use the following minutes to MET minutes conversion map: """ "intensityMETWeights" = ${JSON.stringify(intensityMETWeights)} """
     `
     const run = await executePrompt(prompt, true)
@@ -203,5 +203,3 @@ export const createNewThread = async () => {
         threadID: newThread.id
     }, UserDataType.GPT)
 }
-
-await getDaysWorkoutPlan(new Date("2024-03-01"))
