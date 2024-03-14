@@ -120,16 +120,57 @@ export const getDaysWorkoutPlan = async (date: Date) => {
     if (dbData){
         return dbData.feedback
     }
-    const prompt = `Create activity plan for: ${toShortISODate(date)} which is ${getDayOfWeek(date)}. Only use this week's activity data. Don't summarise prior information just give the answer. Format your entire response in JSON in the following format: 
+    const prompt = `
+    Common instructions: use this week's activity data. Don't summarise prior information just give the answer. Format your entire response in JSON in the following format: 
     [{"exerciseTitle": string, "exerciseStartAtTime": string, "exerciseDuration": number, "exerciseCategory": string, "exerciseIntensityCategory": string, "exerciseNotes": string}] 
     exerciseStartAtTime can only have the following values: "morning", "midday", "late_afternoon" and "early_evening". 
     exerciseCategory should indicate the type of exercise such as cardio, strength building etc
     exerciseIntensityCategory can only have the following values: "softActivity", "moderateActivity" and "intenseActivity". 
     In exerciseNotes include detailed description of how to perform the exercise, as well as that exercise's benefits. 
     Don't create groups of exercises as a single item, instead write them all as a separate exercise.
-    Please include some activities for all values of exerciseStartAtTime, however the majority of activities should be scheduled in late afternoon. Make sure to use userData.json file to tailor your response. First, work out the day of the week, then calculate if the day is a gym-going day (if it is in profile's gym-going days), then create the activity plan accordingly. 
+    Please include some activities for all values of exerciseStartAtTime, however the majority of activities should be scheduled in late afternoon. Make sure to use userData.json file to tailor your response. First, calculate if the day is a gym-going day (if it is in profile's gym-going days), then create the activity plan accordingly. 
     Include intense strength training exercises that use equipment on gym going days at late afternoon. Otherwise, create a mix of exercises that don't need equipment and exercises that use equipment that the user has at home. Prioritize variety of activities. Make sure total MET minutes for the day are not too high considering the weekly MET target. 
     Use the following minutes to MET minutes conversion map: """ "intensityMETWeights" = ${JSON.stringify(intensityMETWeights)} """
+
+    Q: Create activity plan for: 2024-02-22 which is Thursday. User's profile: """{"currentFitnessLevel": "Intermediate", "excludeActivitiesKeywords": "yoga, run, jog, bike, swim", "gymDays": ["Wednesday", "Saturday"], homeEquipment: "resistance bands"}""". User's activity data for this week shows lack of steps and soft activity.
+    A: Since Thursday is not in user's gym days, I won't recommend intense strength building activities and I won't recommend activities that uses equipment which is not in this list: resistance bands. Result: \`\`\`
+    [
+        {
+            "exerciseTitle": "Morning Stretch Routine",
+            "exerciseStartAtTime": "morning",
+            "exerciseDuration": 15,
+            "exerciseCategory": "flexibility",
+            "exerciseIntensityCategory": "softActivity",
+            "exerciseNotes": "Start your day with a 15-minute stretching session to wake up your body. Focus on gentle stretches for all major muscle groups to improve flexibility and reduce the risk of injury."
+        },
+        {
+            "exerciseTitle": "Midday Walk",
+            "exerciseStartAtTime": "midday",
+            "exerciseDuration": 30,
+            "exerciseCategory": "cardio",
+            "exerciseIntensityCategory": "softActivity",
+            "exerciseNotes": "Take a brisk 30-minute walk during your lunch break. This will help you meet your daily steps goal and boost your cardiovascular health."
+        },
+        {
+            "exerciseTitle": "Bodyweight Workout Circuit: abs, legs, chest and arms",
+            "exerciseStartAtTime": "late_afternoon",
+            "exerciseDuration": 30,
+            "exerciseCategory": "strength_building, endurance",
+            "exerciseIntensityCategory": "moderateActivity",
+            "exerciseNotes": "For 30 minutes, alternate between following exercises, taking rests as needed, doing as many reps as you can achieve: sit-up, squat, push-up. Improves muscle strength and endurance"
+        },
+        {
+            "exerciseTitle": "Joint health circuit: knees, wrists",
+            "exerciseStartAtTime": "early_evening",
+            "exerciseDuration": 15,
+            "exerciseCategory": "flexibility",
+            "exerciseIntensityCategory": "softActivity",
+            "exerciseNotes": "For 30 minutes, alternate between following exercises, taking rests as needed, doing as many reps as you can achieve: Hamstring bridge, backwards walk, wrist rotation. Improves Joint strength, reducing chance of injury and pain"
+        }
+    ]
+    \`\`\`
+    Q: Create activity plan for: ${toShortISODate(date)} which is ${getDayOfWeek(date)}. 
+    
     `
     const run = await executePrompt(prompt, true)
     await sleep(10000)
@@ -151,8 +192,18 @@ export const getDaysFeedback = async (date: Date) => {
     if (dbData){
         return dbData.feedback
     }
-    const prompt = `Provide feedback for a single day: ${toShortISODate(date)}. First workout the day of the week for that day. Compare with past days of this week. Highlight 2 things I have done well and 2  things that need improvement. 
-    Be specific and mention specific measurements. Refer to my activity and sleep data. Don't mention anything about excluded activities. Use recommendations from health organisations such as WHO as reference.`
+    const prompt = `
+    Common instructions: Compare with past days of this week. Highlight 2 things I have done well and 2  things that need improvement. 
+    Be specific and mention specific measurements. Refer to my activity and sleep data. Don't mention anything about excluded activities. Use recommendations from health organisations such as WHO as reference.
+    Q: Provide feedback for a single day: 2024-02-22 which is Thursday. User's activity data: """{"intenseActivity":120,"caloriesBurned":634,"Type":"activity_Unified","Provider":"Unified","date":"2024-02-22","steps":8058,"provider":"Unified","moderateActivity":6037,"softActivity":4710,"type":"activity"}""", user's sleep data: """{"bedtimeStart":1710395431,"totalSleepDuration":387,"averageHR":61, "bedtimeEnd":1710418621,"Type":"sleep_Unified","Provider":"Unified","sleepScore":66,"date":"2024-02-22","lightSleepDuration":10890,"sleepLatency":645,"sleepEfficiency":94,"provider":"Unified","deepSleepDuration":9540,"remSleepDuration":2550,"type":"sleep"}""". User's sleep data for this week indicates inconsistent bedtime routine, but good amount of deep sleep overall. User's activity data indicates good consistency of exercise but overall lack of intense activity.
+    A: Comparing 2024-02-22 with other days of the week. First working out positives: user has good deep sleep percentage which is consistent and the user exercised a good, consistent amount today. Secondly, working out negatives: user slept less than WHO recommended 7 hours, and user didn't do enough intense activity. Result:
+    Areas of achievement: 
+    1) Good percentage of deep sleep: deep sleep is the most restorative sleep phase, indicating good mental condition. You had 159 mins of deep sleep, this is 25 minutes more than yesterday, showing improvement. Your deep sleep is fairly consistent which is also a positive
+    2) Excellent exercise consistency: You have burned 634 calories through activities today, this is an excellent number and is decently consistent with this week's data. Physical activity promotes better mental state as well as increase your athleticism
+    Areas of Improvement: 
+    1) Poor sleep duration: You only slept around 6 hours, whereas WHO recommends a minimum of 7 hours for adults. Strive to adjust your bedtime schedule to get at least 7 hours or more
+    2) Poor intense activity amount: you only did 2 mins of intense activity today. Looking at this week's data, you have low average intense activity minutes per day. Intense activity is beneficial in raising your athleticism as well as reducing risks of cardiovascular diseases. 
+    Q: Provide feedback for a single day: ${toShortISODate(date)} which is ${getDayOfWeek(date)}.`
     const run = await executePrompt(prompt, true)
     await sleep(10000)
     const messages = await getThreadMessages()
