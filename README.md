@@ -1,5 +1,17 @@
 # OpenFitCompanion
-Open-source full-stack application to synchronize with health data provider to accelerate user's fitness journey.
+Open-source full-stack application to synchronize with health data providers and provide insights using OpenAI GPT API to accelerate user's fitness journey.
+## Structure
+### High-Level
+![image](https://github.com/egorchern/OpenFitCompanion/assets/46675707/d63a190e-e9bb-44b3-8e26-b669468f4b22)
+### Back-end
+![image](https://github.com/egorchern/OpenFitCompanion/assets/46675707/877daabc-8ed7-4c2d-86fc-2664fad1bf56)
+### Front-end
+![image](https://github.com/egorchern/OpenFitCompanion/assets/46675707/6005b837-e478-42dc-9ef3-9dead8a7ab19)
+## Results
+![image](https://github.com/egorchern/OpenFitCompanion/assets/46675707/11a960e9-2a84-4a66-bcd4-99f5e1271d96)
+![image](https://github.com/egorchern/OpenFitCompanion/assets/46675707/b7a67470-36d9-40d4-bad4-454abc23fd95)
+![image](https://github.com/egorchern/OpenFitCompanion/assets/46675707/b7446175-d477-4c8c-b405-9633a9b64f53)
+
 ## Deployment
 1. Register for AWS: https://aws.amazon.com/resources/create-account/
 2. Set up billing: https://us-east-1.console.aws.amazon.com/billing/home#/bills
